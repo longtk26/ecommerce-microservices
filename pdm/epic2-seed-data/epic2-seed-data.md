@@ -199,15 +199,15 @@ public enum OrderStatus { PENDING, COMPLETED, CANCELLED }
 **As a developer**, I want SQL migration files managed by Flyway so the schema is version-controlled and auto-applied on startup.
 
 **Acceptance Criteria:**
-- [ ] `services/inventory-service/src/main/resources/db/migration/V1__create_shops.sql`
-- [ ] `services/inventory-service/src/main/resources/db/migration/V2__create_products.sql`
-- [ ] `services/inventory-service/src/main/resources/db/migration/V3__create_stock.sql`
-- [ ] `services/inventory-service/src/main/resources/db/migration/V4__create_reservations.sql`
-- [ ] `services/order-service/src/main/resources/db/migration/V1__create_orders.sql`
-- [ ] `services/order-service/src/main/resources/db/migration/V2__create_order_items.sql`
-- [ ] `services/payment-service/src/main/resources/db/migration/V1__create_payment_attempts.sql`
-- [ ] Flyway runs automatically on `spring.flyway.enabled=true` — no manual step needed
-- [ ] Migrations are idempotent (`CREATE TABLE IF NOT EXISTS`)
+- [x] `services/inventory-service/src/main/resources/db/migration/V1__create_shops.sql`
+- [x] `services/inventory-service/src/main/resources/db/migration/V2__create_products.sql`
+- [x] `services/inventory-service/src/main/resources/db/migration/V3__create_stock.sql`
+- [x] `services/inventory-service/src/main/resources/db/migration/V4__create_reservations.sql`
+- [x] `services/order-service/src/main/resources/db/migration/V1__create_orders.sql`
+- [x] `services/order-service/src/main/resources/db/migration/V2__create_order_items.sql`
+- [x] `services/payment-service/src/main/resources/db/migration/V1__create_payment_attempts.sql`
+- [x] Flyway runs automatically on `spring.flyway.enabled=true` — no manual step needed
+- [x] Migrations are idempotent (`CREATE TABLE IF NOT EXISTS`)
 
 **Flyway naming convention:** `V{version}__{description}.sql` (double underscore)
 
@@ -217,12 +217,12 @@ public enum OrderStatus { PENDING, COMPLETED, CANCELLED }
 **As a developer**, I want realistic seed data inserted on first startup without manual SQL.
 
 **Acceptance Criteria:**
-- [ ] Seed data in `V5__seed_data.sql` (Flyway migration) — or alternatively, an `ApplicationRunner` bean in the Inventory Service
-- [ ] Inserts both shops, 10 products, and stock records
-- [ ] Uses fixed UUIDs so the frontend can reference them reliably across restarts
-- [ ] Idempotent: `INSERT ... ON CONFLICT DO NOTHING`
-- [ ] Stock for USB-C Hub = **3** (race condition test)
-- [ ] Stock for Laptop Stand = **0** (out-of-stock test)
+- [x] Seed data in `V5__seed_data.sql` (Flyway migration) — or alternatively, an `ApplicationRunner` bean in the Inventory Service
+- [x] Inserts both shops, 10 products, and stock records
+- [x] Uses fixed UUIDs so the frontend can reference them reliably across restarts
+- [x] Idempotent: `INSERT ... ON CONFLICT DO NOTHING`
+- [x] Stock for USB-C Hub = **3** (race condition test)
+- [x] Stock for Laptop Stand = **0** (out-of-stock test)
 
 **Recommended approach — Flyway seed migration:**
 ```sql
@@ -251,11 +251,11 @@ ON CONFLICT (product_id) DO NOTHING;
 **As a buyer (via the frontend)**, I want to fetch all shops and products.
 
 **Acceptance Criteria:**
-- [ ] `GET /api/shops` — returns list of all shops
-- [ ] `GET /api/shops/{shopId}/products` — returns products with current stock level
-- [ ] Response DTOs use records (not entities directly)
-- [ ] Products with `stockQuantity = 0` still appear but `inStock = false`
-- [ ] Uses Spring Data JPA repositories with a custom JPQL query to join product + stock
+- [x] `GET /api/shops` — returns list of all shops
+- [x] `GET /api/shops/{shopId}/products` — returns products with current stock level
+- [x] Response DTOs use records (not entities directly)
+- [x] Products with `stockQuantity = 0` still appear but `inStock = false`
+- [x] Uses Spring Data JPA repositories with a custom JPQL query to join product + stock
 
 **Controller + DTO example:**
 ```java
@@ -284,8 +284,8 @@ public record ProductResponse(
 
 ## ✅ Epic 2 Definition of Done
 
-- [ ] All Flyway migrations run on service startup with no errors
-- [ ] Service restart re-applies no migrations (Flyway idempotency working)
-- [ ] `GET /api/shops` returns both shops
-- [ ] `GET /api/shops/{shopId}/products` returns products with stock info
-- [ ] USB-C Hub shows `stockQuantity=3`, Laptop Stand shows `stockQuantity=0, inStock=false`
+- [x] All Flyway migrations run on service startup with no errors
+- [x] Service restart re-applies no migrations (Flyway idempotency working)
+- [x] `GET /api/shops` returns both shops
+- [x] `GET /api/shops/{shopId}/products` returns products with stock info
+- [x] USB-C Hub shows `stockQuantity=3`, Laptop Stand shows `stockQuantity=0, inStock=false`

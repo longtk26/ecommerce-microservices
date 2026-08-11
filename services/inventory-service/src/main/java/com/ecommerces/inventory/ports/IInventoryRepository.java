@@ -1,0 +1,27 @@
+package com.ecommerces.inventory.ports;
+
+import com.ecommerces.inventory.domain.Product;
+import com.ecommerces.inventory.domain.Shop;
+import com.ecommerces.inventory.domain.Stock;
+import com.ecommerces.inventory.domain.StockReservation;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+
+public interface IInventoryRepository {
+
+    List<Shop> findAllShops();
+
+    List<Product> findProductsByShopId(UUID shopId);
+
+    Optional<Product> findProductById(UUID productId);
+
+    Optional<Stock> findStockByProductId(UUID productId);
+
+    Stock saveStock(Stock stock);
+
+    StockReservation saveReservation(StockReservation reservation);
+
+    List<StockReservation> findReservationsByOrderId(UUID orderId);
+}
