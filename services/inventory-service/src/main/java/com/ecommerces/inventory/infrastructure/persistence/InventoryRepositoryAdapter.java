@@ -40,6 +40,11 @@ public class InventoryRepositoryAdapter implements IInventoryRepository {
     }
 
     @Override
+    public List<Product> findProductsByIds(List<UUID> productIds) {
+        return productJpaRepository.findByIdIn(productIds);
+    }
+
+    @Override
     public Optional<Product> findProductById(UUID productId) {
         return productJpaRepository.findById(productId);
     }

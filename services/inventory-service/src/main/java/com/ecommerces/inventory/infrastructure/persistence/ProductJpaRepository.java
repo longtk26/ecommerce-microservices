@@ -16,4 +16,12 @@ interface ProductJpaRepository extends JpaRepository<Product, UUID> {
             ORDER BY p.createdAt ASC
             """)
     List<Product> findByShopId(@Param("shopId") UUID shopId);
+
+    /**
+     * Bulk-fetch products whose IDs are in the given collection.
+     * JpaRepository.findAllById() already generates an IN-clause query, but this
+     * explicit alias keeps the naming consistent with the port interface.
+     */
+    @Query("SELECT p FROM Product p WHERE p.id IN :ids")
+    List<Product> findByIdIn(@Param("ids") List<UUID> ids);
 }

@@ -31,6 +31,16 @@ import java.util.UUID;
 @ToString(exclude = "items") // avoid loading lazy collection in toString
 public class Order {
 
+    /**
+     * Convenience constructor used by CreateOrderUseCase to build a new order.
+     * Items are added separately via {@link #addItem}.
+     */
+    public Order(String userId, UUID shopId, BigDecimal totalAmount) {
+        this.userId = userId;
+        this.shopId = shopId;
+        this.totalAmount = totalAmount;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
@@ -58,4 +68,19 @@ public class Order {
     @UpdateTimestamp
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
+
+    /**
+     * Factory helper that creates a new {@link OrderItem}, links it to this order,
+     * and appends it to the items collection.
+     * Relies on {@code CascadeType.ALL} — no separate repository call needed.
+     */
+    public void addItem(UUID productId, String productName, BigDecimal unitPrice, int quantity) {
+        OrderItem item = new OrderItem();
+        item.setOrder(this);
+        item.setProductId(productId);
+        item.setProductName(productName);
+        item.setUnitPrice(unitPrice);
+        item.setQuantity(quantity);
+        this.items.add(item);
+    }
 }

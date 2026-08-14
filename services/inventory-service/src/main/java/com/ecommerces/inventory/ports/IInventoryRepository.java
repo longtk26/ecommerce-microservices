@@ -15,6 +15,9 @@ public interface IInventoryRepository {
 
     List<Product> findProductsByShopId(UUID shopId);
 
+    /** Bulk-fetch products whose IDs are in the given list (single query). */
+    List<Product> findProductsByIds(List<UUID> productIds);
+
     Optional<Product> findProductById(UUID productId);
 
     Optional<Stock> findStockByProductId(UUID productId);

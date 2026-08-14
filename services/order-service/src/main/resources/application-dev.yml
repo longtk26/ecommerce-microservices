@@ -13,9 +13,25 @@ spring:
     driver-class-name: org.postgresql.Driver
   jpa:
     show-sql: true
+    hibernate:
+      ddl-auto: validate
     properties:
       hibernate:
         format_sql: true
   flyway:
+    enabled: true
     baseline-on-migrate: true
-  
+
+# Inventory Service base URL — override via env var in production
+inventory:
+  service:
+    url: ${INVENTORY_SERVICE_URL:http://localhost:8082}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      show-details: always

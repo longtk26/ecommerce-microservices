@@ -1,6 +1,7 @@
 package com.ecommerces.order.presentation.controllers;
 
 import com.ecommerces.order.presentation.dto.CreateOrderRequestDto;
+import com.ecommerces.order.presentation.dto.CreateOrderResponseDto;
 import com.ecommerces.order.usecases.CreateOrderUseCase;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -11,7 +12,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/orders")
+@RequestMapping("/api/orders")
 public class OrderController {
 
     private final CreateOrderUseCase createOrderUseCase;
@@ -21,8 +22,8 @@ public class OrderController {
     }
 
     @PostMapping
-    @ResponseStatus(HttpStatus.ACCEPTED)
-    public void createOrder(@Valid @RequestBody CreateOrderRequestDto dto) {
-        createOrderUseCase.execute(dto);
+    @ResponseStatus(HttpStatus.CREATED)
+    public CreateOrderResponseDto createOrder(@Valid @RequestBody CreateOrderRequestDto dto) {
+        return createOrderUseCase.execute(dto);
     }
 }
