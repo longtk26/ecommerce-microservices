@@ -15,11 +15,12 @@ import java.util.UUID;
 
 /**
  * Listens for {@code payment.processed} events and marks the stock reservations
- * for that order as {@code RELEASED} (i.e. consumed / fulfilled).
+ * for that order as {@code CONFIRMED} — meaning the stock is sold/committed.
  *
  * <p>Stock quantities were already decremented at reservation time, so no
- * further stock change is needed here — we only update the reservation audit
- * rows so downstream queries can distinguish "used" from "still on hold".
+ * further stock change is needed here. We only transition the reservation status
+ * from {@code RESERVED} → {@code CONFIRMED} to close the audit trail cleanly
+ * and distinguish "sold" stock from stock that was merely held and then returned.
  */
 @Component
 public class PaymentProcessedListener {
@@ -46,16 +47,16 @@ public class PaymentProcessedListener {
         }
 
         for (StockReservation reservation : reservations) {
-            // Idempotent — skip already-released reservations
-            if (reservation.getStatus() == ReservationStatus.RELEASED) {
-                logger.debug("Reservation {} already RELEASED, skipping", reservation.getId());
+            // Idempotent — skip already-confirmed reservations
+            if (reservation.getStatus() == ReservationStatus.CONFIRMED) {
+                logger.debug("Reservation {} already CONFIRMED, skipping", reservation.getId());
                 continue;
             }
-            reservation.setStatus(ReservationStatus.RELEASED);
+            reservation.setStatus(ReservationStatus.CONFIRMED);
             inventoryRepository.saveReservation(reservation);
         }
 
-        logger.info("Marked {} reservation(s) as RELEASED for orderId={}",
+        logger.info("Marked {} reservation(s) as CONFIRMED for orderId={}",
                 reservations.size(), event.orderId());
     }
 }

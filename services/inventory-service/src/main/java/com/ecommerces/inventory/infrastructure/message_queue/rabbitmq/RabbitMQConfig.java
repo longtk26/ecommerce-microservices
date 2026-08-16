@@ -19,6 +19,7 @@ public class RabbitMQConfig {
     // Queues this service consumes from
     public static final String QUEUE_ORDER_CREATED = "inventory-service.order-created";
     public static final String QUEUE_PAYMENT_PROCESSED = "inventory-service.payment-processed";
+    public static final String QUEUE_PAYMENT_FAILED = "inventory-service.payment-failed";
 
     // ── Exchange ─────────────────────────────────────────────────────────────────
 
@@ -39,6 +40,11 @@ public class RabbitMQConfig {
         return QueueBuilder.durable(QUEUE_PAYMENT_PROCESSED).build();
     }
 
+    @Bean
+    public Queue paymentFailedQueue() {
+        return QueueBuilder.durable(QUEUE_PAYMENT_FAILED).build();
+    }
+
     // ── Bindings (queue ← routing key ← exchange) ────────────────────────────
 
     @Bean
@@ -53,6 +59,13 @@ public class RabbitMQConfig {
         return BindingBuilder.bind(paymentProcessedQueue)
                 .to(sagaExchange)
                 .with(EventRoutes.PAYMENT_PROCESSED);
+    }
+
+    @Bean
+    public Binding paymentFailedBinding(Queue paymentFailedQueue, TopicExchange sagaExchange) {
+        return BindingBuilder.bind(paymentFailedQueue)
+                .to(sagaExchange)
+                .with(EventRoutes.PAYMENT_FAILED);
     }
 
     // ── JSON Converter + RabbitTemplate (publisher side) ─────────────────────
