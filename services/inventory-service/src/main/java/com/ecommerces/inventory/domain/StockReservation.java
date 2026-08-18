@@ -43,4 +43,11 @@ public class StockReservation {
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
+
+    public StockReservation(UUID orderId, UUID productId, int quantity, ReservationStatus status) {
+        this.orderId = orderId;
+        this.productId = productId;
+        this.quantity = quantity;
+        this.status = status;
+    }
 }

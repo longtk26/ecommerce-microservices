@@ -20,13 +20,28 @@ public class InventoryRepositoryAdapter implements IInventoryRepository {
     private final StockReservationJpaRepository reservationJpaRepository;
 
     public InventoryRepositoryAdapter(ShopJpaRepository shopJpaRepository,
-                                      ProductJpaRepository productJpaRepository,
-                                      StockJpaRepository stockJpaRepository,
-                                      StockReservationJpaRepository reservationJpaRepository) {
+            ProductJpaRepository productJpaRepository,
+            StockJpaRepository stockJpaRepository,
+            StockReservationJpaRepository reservationJpaRepository) {
         this.shopJpaRepository = shopJpaRepository;
         this.productJpaRepository = productJpaRepository;
         this.stockJpaRepository = stockJpaRepository;
         this.reservationJpaRepository = reservationJpaRepository;
+    }
+
+    @Override
+    public List<Stock> findStocksByProductIds(List<UUID> productIds) {
+        return stockJpaRepository.findByProductIdIn(productIds);
+    }
+
+    @Override
+    public List<Stock> saveAllStocks(List<Stock> stocks) {
+        return stockJpaRepository.saveAll(stocks);
+    }
+
+    @Override
+    public List<StockReservation> saveReservations(List<StockReservation> reservations) {
+        return reservationJpaRepository.saveAll(reservations);
     }
 
     @Override
