@@ -22,9 +22,15 @@ public interface IInventoryRepository {
 
     Optional<Stock> findStockByProductId(UUID productId);
 
+    List<Stock> findStocksByProductIds(List<UUID> productIds);
+
     Stock saveStock(Stock stock);
 
+    List<Stock> saveAllStocks(List<Stock> stocks);
+
     StockReservation saveReservation(StockReservation reservation);
+
+    List<StockReservation> saveReservations(List<StockReservation> reservations);
 
     List<StockReservation> findReservationsByOrderId(UUID orderId);
 }
