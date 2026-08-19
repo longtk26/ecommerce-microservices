@@ -13,6 +13,6 @@ interface StockJpaRepository extends JpaRepository<Stock, UUID> {
 
     Optional<Stock> findByProductId(UUID productId);
 
-    @Query("SELECT s FROM Stock s WHERE s.productId IN :productIds")
+    @Query("SELECT s FROM Stock s WHERE s.product.id IN :productIds")
     List<Stock> findByProductIdIn(@Param("productIds") List<UUID> productIds);
 }

@@ -9,8 +9,6 @@ import com.ecommerces.inventory.domain.Stock;
 import com.ecommerces.inventory.domain.StockReservation;
 import com.ecommerces.inventory.ports.IInventoryRepository;
 
-import org.apache.coyote.BadRequestException;
-import org.hibernate.dialect.lock.OptimisticEntityLockException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
@@ -66,7 +64,10 @@ public class OrderCreatedListener {
                 .collect(Collectors.toMap(stock -> stock.getProduct().getId(), Function.identity()));
 
         // ── Validate Order Items ─────────────────────────────────────────
-        validateOrderItems(event, stockMap);
+        boolean isSuccess = validateOrderItems(event, stockMap);
+        if (!isSuccess) {
+            return;
+        }
 
         // ── Reserve Stock ─────────────────────────────────────────
         List<StockReservation> reservations = new ArrayList<>();
@@ -101,7 +102,7 @@ public class OrderCreatedListener {
                 new InventoryReservedEvent(event.orderId(), event.userId(), event.shopId()));
     }
 
-    private void validateOrderItems(OrderCreatedEvent event, Map<UUID, Stock> stockMap) {
+    private boolean validateOrderItems(OrderCreatedEvent event, Map<UUID, Stock> stockMap) {
         try {
             for (OrderCreatedEvent.OrderItemPayload item : event.items()) {
                 UUID productId = UUID.fromString(item.productId());
@@ -123,8 +124,9 @@ public class OrderCreatedListener {
                     new InventoryFailedEvent(
                             event.orderId(),
                             e.getMessage()));
-            return;
+            return false;
         }
+        return true;
     }
 
 }
