@@ -1,10 +1,12 @@
 package com.ecommerces.payment.usecases;
 
 import com.ecommerces.events.EventRoutes;
+import com.ecommerces.events.PaymentFailedEvent;
 import com.ecommerces.events.PaymentProcessedEvent;
 import com.ecommerces.events.PaymentProcessedEvent.OrderItemPayload;
 import com.ecommerces.payment.domain.PaymentAttempt;
 import com.ecommerces.payment.domain.PaymentStatus;
+import com.ecommerces.payment.domain.exceptions.PaymentFailedException;
 import com.ecommerces.payment.infrastructure.http.dto.OrderDetailsDto;
 import com.ecommerces.payment.ports.IMessageQueue;
 import com.ecommerces.payment.ports.IOrderServiceClient;
@@ -36,6 +38,13 @@ public class ProcessPaymentUseCase {
 
     @Transactional
     public void execute(ProcessPaymentRequestDto dto) {
+        boolean simulateFailed = false;
+        if (simulateFailed) {
+            PaymentFailedEvent event = new PaymentFailedEvent(dto.getOrderId(), "Payment failed");
+            messageQueue.publish(EventRoutes.EXCHANGE, EventRoutes.PAYMENT_FAILED, event);
+            throw new PaymentFailedException("Payment failed");
+        }
+
         // 1. Fetch order details from order-service — never trust the frontend for
         // amount/userId.
         OrderDetailsDto order = orderServiceClient.getOrderById(dto.getOrderId());
