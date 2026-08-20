@@ -1,0 +1,5 @@
+spring:
+  main:
+    web-application-type: none   # No HTTP server — pure AMQP consumer
+  profiles:
+    active: dev

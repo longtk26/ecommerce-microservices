@@ -110,9 +110,10 @@ flyway-info-all: flyway-info-order flyway-info-inventory flyway-info-payment
 ## Compile all services
 build-all:
 	@echo "▶ Compiling all services..."
-	@cd services/order-service     && mvn compile -q
-	@cd services/inventory-service && mvn compile -q
-	@cd services/payment-service   && mvn compile -q
+	@cd services/order-service        && mvn compile -q
+	@cd services/inventory-service    && mvn compile -q
+	@cd services/payment-service      && mvn compile -q
+	@cd services/notification-service && mvn compile -q
 	@echo "✔ All services compiled."
 
 # ── Run (dev) ─────────────────────────────────────────────────────────────────
@@ -135,6 +136,13 @@ run-inventory:
 run-payment:
 	@echo "▶ Starting payment-service..."
 	@cd services/payment-service && \
+	export $$(grep -v '^\#' .env | xargs) && \
+	mvn spring-boot:run -Dspring-boot.run.profiles=dev
+
+## Start notification-service in dev mode
+run-notification:
+	@echo "▶ Starting notification-service..."
+	@cd services/notification-service && \
 	export $$(grep -v '^\#' .env | xargs) && \
 	mvn spring-boot:run -Dspring-boot.run.profiles=dev
 
@@ -165,5 +173,5 @@ help:
 	seed-inventory seed-all \
 	flyway-info-order flyway-info-inventory flyway-info-payment flyway-info-all \
 	build-all \
-	run-order run-inventory run-payment \
+	run-order run-inventory run-payment run-notification \
 	setup help

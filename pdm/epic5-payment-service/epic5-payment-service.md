@@ -1,5 +1,6 @@
 # Epic 5 — Payment Service (Mocked)
-
+-  Don't need to implement because we will switch flag in API payment to simulate payment success or not
+- Listen reserved event isn't necessary now at Payment service
 ## Overview
 
 The Payment Service simulates payment processing with a **configurable success/failure rate**. The real learning here is the **compensation event chain**: when payment fails, this service fires the event that triggers inventory rollback.
