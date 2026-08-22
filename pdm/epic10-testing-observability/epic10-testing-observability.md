@@ -1,8 +1,8 @@
-# Epic 8 — Race Condition Testing & Observability
+# Epic 10 — Race Condition Testing & Observability
 
 ## Overview
 
-This epic turns your working system into a **provably correct** system. You'll write a concurrent load test that intentionally breaks naive implementations, and add structured logging so you can trace every event through the entire saga.
+This epic turns your working system into a **provably correct** system. You'll write a concurrent load test that intentionally breaks naive implementations, and add structured logging so you can trace every event through the API Gateway, Discovery Service, and the entire Saga flow.
 
 This is what separates a portfolio project from a production system.
 
@@ -13,6 +13,7 @@ This is what separates a portfolio project from a production system.
 ```
 scripts/race-condition-test.js
 │
+│  Target: API Gateway (http://localhost:8080)
 │  USB-C Hub: quantity = 3
 │
 │  Fire 10 simultaneous POST /api/orders
@@ -21,8 +22,9 @@ scripts/race-condition-test.js
 │  │ Promise.all([                        │
 │  │   order1, order2, ... order10        │  ← all fire simultaneously
 │  │ ])                                   │
-│  └──────────────────────────────────────┘
-│
+│  └──────────────────┬───────────────────┘
+│                     │ Routes through Gateway (8080)
+│                     ▼
 │  Expected outcome (with correct @Version locking):
 │  ✅ 3 orders → COMPLETED
 │  ❌ 7 orders → CANCELLED
@@ -37,7 +39,7 @@ not part of the application logic. No need to spin up a Spring Boot test context
 
 ## 📊 Observability: Structured Logging with SLF4J + Logback
 
-Every service should emit **structured logs** with the `orderId` as a correlation key. Configure Logback to output JSON so logs can be parsed and grepped.
+Every service should emit **structured logs** with the `orderId` and `correlationId` as correlation keys. Configure Logback to output JSON so logs can be parsed and grepped.
 
 **Add logstash-logback-encoder dependency:**
 ```xml
@@ -73,7 +75,8 @@ MDC.clear();
 
 **Example JSON log output:**
 ```json
-{"@timestamp":"2026-01-01T10:00:00Z","level":"INFO","service":"order-service","message":"Order created","orderId":"ord-abc","userId":"user-john"}
+{"@timestamp":"2026-01-01T10:00:00Z","level":"INFO","service":"api-gateway","message":"Routing request","path":"/api/orders","correlationId":"corr-123"}
+{"@timestamp":"2026-01-01T10:00:00Z","level":"INFO","service":"order-service","message":"Order created","orderId":"ord-abc","userId":"user-john","correlationId":"corr-123"}
 {"@timestamp":"2026-01-01T10:00:01Z","level":"INFO","service":"inventory-service","message":"Stock reservation attempt","orderId":"ord-abc","productId":"usb-hub","requestedQty":1}
 {"@timestamp":"2026-01-01T10:00:01Z","level":"INFO","service":"inventory-service","message":"Stock reserved successfully","orderId":"ord-abc"}
 {"@timestamp":"2026-01-01T10:00:02Z","level":"INFO","service":"payment-service","message":"Processing payment","orderId":"ord-abc","amount":29.99}
@@ -88,11 +91,11 @@ Trace a complete saga: `docker compose logs | grep "ord-abc"`
 
 ## 📋 Stories
 
-### Story 8.1 — Race Condition Load Test Script
-**As a developer**, I want a script that fires concurrent orders to prove `@Version` locking works.
+### Story 10.1 — Race Condition Load Test Script
+**As a developer**, I want a script that fires concurrent orders through the API Gateway to prove `@Version` locking works end-to-end.
 
 **Acceptance Criteria:**
-- [ ] `scripts/race-condition-test.js` sends 10 simultaneous POST requests
+- [ ] `scripts/race-condition-test.js` sends 10 simultaneous POST requests through API Gateway (`http://localhost:8080`)
 - [ ] All target USB-C Hub (stock=3), qty=1 each
 - [ ] Uses `Promise.all()` to fire simultaneously
 - [ ] Polls each `orderId` every 1 second until status != PENDING
@@ -105,7 +108,8 @@ Trace a complete saga: `docker compose logs | grep "ord-abc"`
 // scripts/race-condition-test.js
 const axios = require('axios');
 
-const ORDER_API = 'http://localhost:8081';
+// Targets the API Gateway directly (Frontend and external test client only know port 8080)
+const GATEWAY_API = process.env.GATEWAY_URL || 'http://localhost:8080';
 const USB_HUB_ID  = process.env.USB_HUB_PRODUCT_ID  || 'prod-0001-0001-0001-000000000001';
 const SHOP_ID     = process.env.TECHNEST_SHOP_ID     || 'a1b2c3d4-0001-0001-0001-000000000001';
 const N = 10;
@@ -113,7 +117,7 @@ const N = 10;
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 
 async function placeOrder(userId) {
-  const { data } = await axios.post(`${ORDER_API}/api/orders`, {
+  const { data } = await axios.post(`${GATEWAY_API}/api/orders`, {
     userId,
     shopId: SHOP_ID,
     items: [{ productId: USB_HUB_ID, quantity: 1 }],
@@ -124,14 +128,14 @@ async function placeOrder(userId) {
 async function pollStatus(orderId, max = 30) {
   for (let i = 0; i < max; i++) {
     await sleep(1000);
-    const { data } = await axios.get(`${ORDER_API}/api/orders/${orderId}`);
+    const { data } = await axios.get(`${GATEWAY_API}/api/orders/${orderId}`);
     if (data.status !== 'PENDING') return data.status;
   }
   return 'TIMEOUT';
 }
 
 async function run() {
-  console.log(`🧪 Firing ${N} simultaneous orders for USB-C Hub (stock=3)...\n`);
+  console.log(`🧪 Firing ${N} simultaneous orders via API Gateway for USB-C Hub (stock=3)...\n`);
 
   const orderIds = await Promise.all(
     Array.from({ length: N }, (_, i) => placeOrder(`race-user-${i + 1}`))
@@ -172,8 +176,8 @@ node race-condition-test.js
 
 ---
 
-### Story 8.2 — Structured Logging with MDC (Correlation ID)
-**As a developer**, I want structured JSON logs with correlation IDs so I can trace a saga end-to-end.
+### Story 10.2 — Structured Logging with MDC (Correlation ID)
+**As a developer**, I want structured JSON logs with correlation IDs so I can trace a saga end-to-end across Gateway and microservices.
 
 **Acceptance Criteria:**
 - [ ] `logstash-logback-encoder` added to each service's `pom.xml`
@@ -184,14 +188,14 @@ node race-condition-test.js
 
 ---
 
-### Story 8.3 — Spring Actuator Health Endpoints
-**As a developer**, I want each service to expose a detailed health check.
+### Story 10.3 — Spring Actuator Health Endpoints & Gateway Aggregation
+**As a developer**, I want each service to expose a detailed health check and Gateway to aggregate system health.
 
 **Acceptance Criteria:**
 - [ ] `spring-boot-starter-actuator` in each service's `pom.xml`
 - [ ] `management.endpoints.web.exposure.include=health,info` in `application.yml`
-- [ ] `GET /actuator/health` returns: `{ "status": "UP", "components": { "db": {...}, "rabbit": {...} } }`
-- [ ] Returns `503` if DB or RabbitMQ is down (Spring auto-detects this)
+- [ ] `GET /actuator/health` returns: `{ "status": "UP", "components": { "db": {...}, "rabbit": {...}, "discovery": {...} } }`
+- [ ] Returns `503` if DB, RabbitMQ, or Discovery is down
 - [ ] Docker Compose `healthcheck` uses this endpoint
 
 **Docker Compose healthcheck example:**
@@ -207,7 +211,7 @@ order-service:
 
 ---
 
-### Story 8.4 — Database Reset Script
+### Story 10.4 — Database Reset Script
 **As a developer**, I want to reset the database between test runs without restarting Docker.
 
 **Acceptance Criteria:**
@@ -219,10 +223,10 @@ order-service:
 
 ---
 
-## ✅ Epic 8 Definition of Done
+## ✅ Epic 10 Definition of Done
 
-- [ ] `node scripts/race-condition-test.js` prints **PASS** consistently
-- [ ] All services emit structured JSON logs with `orderId` field
-- [ ] `docker compose logs | grep "<orderId>"` shows full saga trace
+- [ ] `node scripts/race-condition-test.js` prints **PASS** consistently via API Gateway
+- [ ] All services emit structured JSON logs with `orderId` and correlation fields
+- [ ] `docker compose logs | grep "<orderId>"` shows full saga trace from Gateway to Notifications
 - [ ] All services return health status from `/actuator/health`
 - [ ] `scripts/reset.js` resets state cleanly for re-testing

@@ -10,10 +10,12 @@
 | Layer | Technology |
 |-------|-----------|
 | **Services** | Java 21 + Spring Boot 3 |
+| **Service Registry** | Spring Cloud Netflix Eureka |
+| **API Gateway** | Spring Cloud Gateway (Reactive / Netty) |
 | **Messaging** | RabbitMQ (Spring AMQP) |
 | **Database** | PostgreSQL + Spring Data JPA |
 | **Build Tool** | Maven |
-| **Frontend** | React Router v7 (framework mode) + Vite |
+| **Frontend** | React Router v7 (framework mode) / Next.js + Vite |
 | **Infra** | Docker Compose |
 
 ---
@@ -22,11 +24,33 @@
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                   FRONTEND (React Router v7)                 │
-│              Buyer browses → adds to cart → checks out       │
+│                    FRONTEND (Buyer UI)                      │
+│       Buyer browses → adds to cart → checks out             │
+│       Single Backend Endpoint: http://localhost:8080        │
 └──────────────────────────────┬──────────────────────────────┘
                                │ REST API
                                ▼
+┌─────────────────────────────────────────────────────────────┐
+│                 API GATEWAY (Spring Cloud Gateway)          │
+│                      Port: 8080                             │
+│       /api/orders/**    →  lb://order-service               │
+│       /api/shops/**     →  lb://inventory-service           │
+│       /api/products/**  →  lb://inventory-service           │
+└──────────────┬───────────────────────────────┬──────────────┘
+               │ Dynamic Discovery             │
+               ▼                               │
+┌──────────────────────────────┐               │
+│       SERVICE REGISTRY       │               │
+│       (Eureka Server)        │               │
+│          Port: 8761          │               │
+│  - order-service             │               │
+│  - inventory-service         │               │
+│  - payment-service           │               │
+│  - notification-service      │               │
+└──────────────▲───────────────┘               │
+               │ Dynamic Host Registration     │
+               ├───────────────────────────────┘
+               ▼
 ┌──────────────────────────────────────────────────────────────────────┐
 │                         MESSAGE BROKER (RabbitMQ)                    │
 │                                                                      │
@@ -62,8 +86,9 @@ Work through the epics **in order**. Each phase builds on the last.
 | **Phase 2 — Data Layer** | [Epic 2](./epic2-seed-data/epic2-seed-data.md) | JPA entities, Flyway migrations, seeding realistic data |
 | **Phase 3 — Core Saga** | [Epic 3](./epic3-order-service/epic3-order-service.md) · [Epic 4](./epic4-inventory-service/epic4-inventory-service.md) · [Epic 5](./epic5-payment-service/epic5-payment-service.md) | Event publishing, consuming, compensation rollbacks |
 | **Phase 4 — Observers** | [Epic 6](./epic6-notification-service/epic6-notification-service.md) | Adding features without touching existing code |
-| **Phase 5 — Frontend** | [Epic 7](./epic7-frontend/epic7-frontend.md) | React Router v7, buyer UI, real-time order status polling |
-| **Phase 6 — Quality** | [Epic 8](./epic8-testing-observability/epic8-testing-observability.md) | Race condition tests, structured logging, health checks |
+| **Phase 5 — Frontend** | [Epic 7](./epic7-frontend/epic7-frontend.md) | React Router v7 / Next.js buyer UI, real-time status polling |
+| **Phase 6 — Discovery & Gateway** | [Epic 8](./epic8-service-registry/epic8-service-registry.md) · [Epic 9](./epic9-api-gateway/epic9-api-gateway.md) | Dynamic host discovery, Eureka registry, API Gateway routing, CORS |
+| **Phase 7 — Quality** | [Epic 10](./epic10-testing-observability/epic10-testing-observability.md) | Race condition tests, structured logging, health checks |
 
 ---
 
@@ -73,15 +98,17 @@ Work through the epics **in order**. Each phase builds on the last.
 ecommerces/
 ├── pdm/                          ← You are here (docs)
 ├── services/
+│   ├── discovery-service/        ← Spring Cloud Eureka Server (port 8761)
+│   ├── api-gateway/              ← Spring Cloud Gateway (port 8080)
 │   ├── order-service/            ← Spring Boot (Maven)
 │   ├── inventory-service/        ← Spring Boot (Maven)
 │   ├── payment-service/          ← Spring Boot (Maven)
 │   └── notification-service/     ← Spring Boot (Maven, no REST — consumer only)
-├── frontend/                     ← React Router v7 (Vite)
+├── frontend/                     ← React Router v7 / Next.js (fe)
 ├── shared/
 │   └── events/                   ← Shared Java library: event routing key constants
 ├── scripts/
-│   └── race-condition-test.js    ← Concurrent order load test (Node.js script)
+│   └── race-condition-test.js    ← Concurrent order load test (targets Gateway on port 8080)
 ├── docker-compose.yml
 └── .env.example
 ```
@@ -97,6 +124,8 @@ ecommerces/
 | **Idempotency** | Epics 3–5: handle duplicate events safely |
 | **Optimistic Locking** | Epic 4: `@Version` on stock entity |
 | **Observer Pattern** | Epic 6: Notification Service |
+| **Service Discovery** | Epic 8: Eureka Server & dynamic instance registration |
+| **API Gateway & Routing** | Epic 9: Spring Cloud Gateway, dynamic load balancing, unified CORS |
 | **Spring AMQP** | Epic 1: RabbitMQ integration in Spring Boot |
 | **Flyway Migrations** | Epic 2: versioned DB schema management |
 
@@ -104,11 +133,13 @@ ecommerces/
 
 ## ✅ Definition of Done (project-level)
 
+- [ ] All microservices register dynamically with Service Registry (Eureka) on startup
+- [ ] Frontend interacts exclusively via API Gateway (`http://localhost:8080`)
 - [ ] A buyer can browse products from 2 seeded shops
 - [ ] A buyer can place an order through the checkout flow
 - [ ] The saga completes successfully (stock reserved → payment → completed)
 - [ ] Payment failure triggers stock restoration and order cancellation
 - [ ] Out-of-stock triggers immediate order cancellation
-- [ ] 10 concurrent orders for 3-stock item correctly fails 7 of them
+- [ ] 10 concurrent orders for 3-stock item correctly fails 7 of them via Gateway
 - [ ] Notification Service logs mock emails for completed/cancelled orders
 - [ ] All services start with a single `docker compose up`

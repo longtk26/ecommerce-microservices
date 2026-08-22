@@ -188,19 +188,53 @@ Build the API endpoint first. Don't add event listeners yet.
 
 ---
 
-## Phase 6 — Quality & Testing
-**Epic**: [Epic 8 — Testing & Observability](./epic8-testing-observability/epic8-testing-observability.md)  
+---
+
+## Phase 6 — Service Discovery & API Gateway
+**Epics**:  
+- [Epic 8 — Service Registry](./epic8-service-registry/epic8-service-registry.md)  
+- [Epic 9 — API Gateway](./epic9-api-gateway/epic9-api-gateway.md)  
+**Estimated Time**: 2 days  
+**Goal**: "Frontend talks only to the API Gateway on port 8080, and backend services dynamically discover each other via Eureka"
+
+### What You're Learning
+- Service registration and dynamic host discovery with Spring Cloud Netflix Eureka
+- Client-side load balancing via `lb://` URI schemes
+- Centralizing cross-cutting concerns (CORS, request routing, correlation IDs) in Spring Cloud Gateway
+- Decoupling frontend network knowledge from internal microservice topologies
+
+### Step-by-Step Checklist
+- [ ] Create `services/discovery-service/` with `spring-cloud-starter-netflix-eureka-server`
+- [ ] Annotate with `@EnableEurekaServer` and configure standalone mode on port `8761`
+- [ ] Add `spring-cloud-starter-netflix-eureka-client` to all backend services (`order-service`, `inventory-service`, `payment-service`, `notification-service`)
+- [ ] Verify all services appear under `http://localhost:8761` dashboard
+- [ ] Create `services/api-gateway/` with `spring-cloud-starter-gateway` on port `8080`
+- [ ] Configure dynamic routes (`/api/orders/**` -> `lb://order-service`, `/api/shops/**` -> `lb://inventory-service`)
+- [ ] Add global CORS rules in Gateway `application.yml` for frontend origins
+- [ ] Add `CorrelationTrackingFilter` to attach `X-Correlation-Id`
+- [ ] Update frontend environment configuration to point to `http://localhost:8080`
+- [ ] Test end-to-end checkout flow purely through the Gateway port `8080`
+
+### Common Mistakes at This Phase
+- **Accidentally including `spring-boot-starter-web` (Tomcat) in `api-gateway`** — Spring Cloud Gateway is reactive (Netty/WebFlux) and will crash if Tomcat is on the classpath
+- **Missing `spring.application.name`** — Eureka uses this property to name the registered service
+- **Container IP resolution issues in Docker Compose** — configure `eureka.instance.prefer-ip-address: true` so containers discover each other via IP/Docker DNS
+
+---
+
+## Phase 7 — Quality & Observability
+**Epic**: [Epic 10 — Testing & Observability](./epic10-testing-observability/epic10-testing-observability.md)  
 **Estimated Time**: 1–2 days  
-**Goal**: "I can prove my system is correct under concurrent load"
+**Goal**: "I can prove my system is correct under concurrent load through the API Gateway"
 
 ### Step-by-Step Checklist
 - [ ] Install `axios` in `scripts/`: `cd scripts && npm init -y && npm install axios`
-- [ ] Run `node scripts/race-condition-test.js` — it will likely FAIL first if you didn't implement `@Version`
+- [ ] Run `node scripts/race-condition-test.js` against Gateway (`http://localhost:8080`) — it will likely FAIL first if you didn't implement `@Version`
 - [ ] Fix concurrency issues until test PASSES consistently (run 3 times to be sure)
 - [ ] Add `logstash-logback-encoder` + `logback-spring.xml` to all services
 - [ ] Add `MDC.put("orderId", ...)` to all `@RabbitListener` handlers
 - [ ] Run the full flow and trace one saga: `docker compose logs | grep "<some-orderId>"`
-- [ ] Verify `/actuator/health` returns correct status on all services
+- [ ] Verify `/actuator/health` returns correct status on all services and Gateway
 
 ---
 
@@ -213,7 +247,8 @@ Build the API endpoint first. Don't add event listeners yet.
 | Phase 3 Done | You can implement a distributed saga with compensation |
 | Phase 4 Done | You understand the open/closed principle at system scale |
 | Phase 5 Done | End-to-end working product with real UI |
-| Phase 6 Done | Your system is provably correct under concurrent load |
+| Phase 6 Done | Dynamic service discovery and unified API Gateway routing |
+| Phase 7 Done | Your system is provably correct under concurrent load |
 
 ---
 
@@ -236,4 +271,5 @@ Build the API endpoint first. Don't add event listeners yet.
 | 3 | Saga pattern, compensation transactions, `@TransactionalEventListener`, idempotency |
 | 4 | Observer pattern, `spring.main.web-application-type: none` |
 | 5 | React Router v7 loaders/actions, React Context, `useEffect` cleanup |
-| 6 | MDC (Mapped Diagnostic Context), Logback JSON encoding, concurrent HTTP clients |
+| 6 | Service discovery with Eureka, reactive routing with Spring Cloud Gateway, client load balancing |
+| 7 | MDC (Mapped Diagnostic Context), Logback JSON encoding, concurrent HTTP clients |
