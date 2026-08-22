@@ -146,6 +146,16 @@ run-notification:
 	export $$(grep -v '^\#' .env | xargs) && \
 	mvn spring-boot:run -Dspring-boot.run.profiles=dev
 
+## Start frontend Next.js application in dev mode
+run-fe:
+	@echo "▶ Starting Next.js frontend..."
+	@cd fe && pnpm dev
+
+## Build frontend Next.js application
+build-fe:
+	@echo "▶ Building Next.js frontend..."
+	@cd fe && pnpm build
+
 # ── Setup: first-time bootstrap ───────────────────────────────────────────────
 
 ## Full first-time setup: start infra → apply all migrations + seed data
@@ -172,6 +182,6 @@ help:
 	migrate-order migrate-inventory migrate-payment migrate-all \
 	seed-inventory seed-all \
 	flyway-info-order flyway-info-inventory flyway-info-payment flyway-info-all \
-	build-all \
-	run-order run-inventory run-payment run-notification \
+	build-all build-fe \
+	run-order run-inventory run-payment run-notification run-fe \
 	setup help
