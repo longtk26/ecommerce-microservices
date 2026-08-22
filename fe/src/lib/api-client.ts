@@ -39,11 +39,20 @@ class ApiClient {
       throw error;
     }
 
-    if (response.status === 204) {
+    if (response.status === 204 || response.status === 202) {
       return null as T;
     }
 
-    return (await response.json()) as T;
+    const text = await response.text();
+    if (!text || !text.trim()) {
+      return null as T;
+    }
+
+    try {
+      return JSON.parse(text) as T;
+    } catch {
+      return text as unknown as T;
+    }
   }
 
   public get<T>(url: string, params?: Record<string, string | number | boolean | undefined>): Promise<T> {
