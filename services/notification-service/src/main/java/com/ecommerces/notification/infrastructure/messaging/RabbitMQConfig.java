@@ -1,12 +1,13 @@
 package com.ecommerces.notification.infrastructure.messaging;
 
 import com.ecommerces.events.EventRoutes;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.core.QueueBuilder;
 import org.springframework.amqp.core.TopicExchange;
-import org.springframework.amqp.support.converter.JacksonJsonMessageConverter;
+import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,10 +15,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class RabbitMQConfig {
 
-    /**
-     * The single queue this service owns.
-     * Named after the service so ownership is immediately obvious in the RabbitMQ UI.
-     */
+    // Unique durable queue for notification-service
     public static final String QUEUE_ORDERS = "notification-service.orders";
 
     // ── Exchange (same topic exchange shared by all saga participants) ──────────
@@ -27,7 +25,7 @@ public class RabbitMQConfig {
         return new TopicExchange(EventRoutes.EXCHANGE, true, false);
     }
 
-    // ── Queue ──────────────────────────────────────────────────────────────────
+    // ── Queue ───────────────────────────────────────────────────────────────────
 
     @Bean
     public Queue ordersQueue() {
@@ -36,22 +34,22 @@ public class RabbitMQConfig {
 
     // ── Binding: wildcard catches ALL order.* events ───────────────────────────
 
-    /**
-     * Binds with {@code order.*} so this service automatically receives any
-     * future routing keys like {@code order.delayed} or {@code order.refunded}
-     * without any publisher needing to change.
-     */
     @Bean
     public Binding ordersBinding(Queue ordersQueue, TopicExchange sagaExchange) {
         return BindingBuilder.bind(ordersQueue)
                 .to(sagaExchange)
-                .with("order.*");   // wildcard binding
+                .with("order.*");
     }
 
-    // ── JSON Message Converter ─────────────────────────────────────────────────
+    // ── JSON Message Converter & ObjectMapper ──────────────────────────────────
 
     @Bean
-    public MessageConverter jsonMessageConverter() {
-        return new JacksonJsonMessageConverter();
+    public ObjectMapper objectMapper() {
+        return new ObjectMapper();
+    }
+
+    @Bean
+    public MessageConverter jsonMessageConverter(ObjectMapper objectMapper) {
+        return new Jackson2JsonMessageConverter(objectMapper);
     }
 }

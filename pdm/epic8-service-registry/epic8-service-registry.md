@@ -53,11 +53,11 @@ This epic introduces **Service Discovery** via **Spring Cloud Netflix Eureka Ser
 **As an infrastructure engineer**, I want a dedicated Spring Boot service running Eureka Server so that microservices can register themselves.
 
 **Acceptance Criteria:**
-- [ ] Maven module created at `services/discovery-service/` (or `services/service-registry/`)
-- [ ] `pom.xml` includes `spring-cloud-starter-netflix-eureka-server` and `spring-boot-starter-actuator`
-- [ ] Main application class annotated with `@EnableEurekaServer`
-- [ ] `application.yml` configured on port `8761` with standalone mode (`register-with-eureka: false`, `fetch-registry: false`)
-- [ ] Eureka Web Dashboard accessible at `http://localhost:8761`
+- [x] Maven module created at `services/discovery-service/` (or `services/service-registry/`)
+- [x] `pom.xml` includes `spring-cloud-starter-netflix-eureka-server` and `spring-boot-starter-actuator`
+- [x] Main application class annotated with `@EnableEurekaServer`
+- [x] `application.yml` configured on port `8761` with standalone mode (`register-with-eureka: false`, `fetch-registry: false`)
+- [x] Eureka Web Dashboard accessible at `http://localhost:8761`
 
 **pom.xml (discovery-service):**
 ```xml
@@ -161,11 +161,11 @@ eureka:
 **As a backend developer**, I want backend services (`order-service`, `inventory-service`, `payment-service`, `notification-service`) to register with Eureka automatically on startup.
 
 **Acceptance Criteria:**
-- [ ] Add `spring-cloud-starter-netflix-eureka-client` to each service's `pom.xml`
-- [ ] Define Spring Cloud dependency management BOM in each service's `pom.xml`
-- [ ] Add Eureka configuration block to each service's `application.yml`
-- [ ] Configure `prefer-ip-address: true` for container networking compatibility
-- [ ] Verify each service registers under its uppercase `spring.application.name` (e.g. `ORDER-SERVICE`)
+- [x] Add `spring-cloud-starter-netflix-eureka-client` to each service's `pom.xml`
+- [x] Define Spring Cloud dependency management BOM in each service's `pom.xml`
+- [x] Add Eureka configuration block to each service's `application.yml`
+- [x] Configure `prefer-ip-address: true` for container networking compatibility
+- [x] Verify each service registers under its uppercase `spring.application.name` (e.g. `ORDER-SERVICE`)
 
 **Add to each service's pom.xml:**
 ```xml
@@ -200,10 +200,10 @@ eureka:
 **As a DevOps engineer**, I want discovery-service integrated into `docker-compose.yml` with proper service dependencies and startup order.
 
 **Acceptance Criteria:**
-- [ ] `discovery-service` defined in `docker-compose.yml` with healthcheck
-- [ ] Backend services declare `depends_on.discovery-service.condition: service_healthy` or proper restart policies
-- [ ] Environment variable `EUREKA_SERVER_URL=http://discovery-service:8761/eureka/` injected into all backend containers
-- [ ] Running `docker compose up` results in all 4 microservices listed as `UP` in `http://localhost:8761`
+- [x] `discovery-service` defined in `docker-compose.yml` with healthcheck
+- [x] Backend services declare `depends_on.discovery-service.condition: service_healthy` or proper restart policies
+- [x] Environment variable `EUREKA_SERVER_URL=http://discovery-service:8761/eureka/` injected into all backend containers
+- [x] Running `docker compose up` results in all 4 microservices listed as `UP` in `http://localhost:8761`
 
 **docker-compose.yml snippet:**
 ```yaml
@@ -238,7 +238,7 @@ eureka:
 
 ## ✅ Epic 8 Definition of Done
 
-- [ ] `discovery-service` runs on port `8761` and exposes the Eureka web UI
-- [ ] `ORDER-SERVICE`, `INVENTORY-SERVICE`, `PAYMENT-SERVICE`, and `NOTIFICATION-SERVICE` all appear in the Eureka Dashboard
-- [ ] Instance termination triggers registration removal within 20 seconds
-- [ ] Service hostnames are discovered dynamically without hardcoded container IP addresses
+- [x] `discovery-service` runs on port `8761` and exposes the Eureka web UI
+- [x] `ORDER-SERVICE`, `INVENTORY-SERVICE`, `PAYMENT-SERVICE`, and `NOTIFICATION-SERVICE` all appear in the Eureka Dashboard
+- [x] Instance termination triggers registration removal within 20 seconds
+- [x] Service hostnames are discovered dynamically without hardcoded container IP addresses

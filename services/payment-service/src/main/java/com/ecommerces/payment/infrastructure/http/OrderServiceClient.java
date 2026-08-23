@@ -20,7 +20,7 @@ public class OrderServiceClient implements IOrderServiceClient {
 
     public OrderServiceClient(
             RestClient.Builder restClientBuilder,
-            @Value("${services.order-service.url}") String orderServiceUrl) {
+            @Value("${services.order-service.url:http://order-service}") String orderServiceUrl) {
         this.restClient = restClientBuilder
                 .baseUrl(orderServiceUrl)
                 .build();

@@ -27,7 +27,7 @@ public class InventoryClient {
     private final RestClient restClient;
 
     public InventoryClient(
-            @Value("${inventory.service.url:http://localhost:8082}") String baseUrl,
+            @Value("${inventory.service.url:http://inventory-service}") String baseUrl,
             RestClient.Builder restClientBuilder) {
         this.restClient = restClientBuilder
                 .baseUrl(baseUrl)

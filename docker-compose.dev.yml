@@ -34,6 +34,21 @@ services:
       timeout: 5s
       retries: 5
 
+  discovery-service:
+    build:
+      context: ./services/discovery-service
+    container_name: discovery-service
+    ports:
+      - "8761:8761"
+    environment:
+      - DISCOVERY_HOST=discovery-service
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider http://localhost:8761/actuator/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
 volumes:
   postgres_data:
   rabbitmq_data:
