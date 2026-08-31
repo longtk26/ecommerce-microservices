@@ -228,8 +228,32 @@ Build the API endpoint first. Don't add event listeners yet.
 
 ---
 
-## Phase 7 — Quality & Observability
-**Epic**: [Epic 10 — Testing & Observability](./epic10-testing-observability/epic10-testing-observability.md)  
+## Phase 7 — Zero-Trust Security & End-to-End JWT Propagation
+**Epic**: [Epic 10 — End-to-End JWT Propagation & Zero-Trust Security](./epic10-jwt-propagation/epic10-jwt-propagation.md)  
+**Estimated Time**: 1–2 days  
+**Goal**: "Replace unverified plain X-User-* headers with cryptographically verified Bearer JWT tokens propagated across all microservices"
+
+### What You're Learning
+- Transitioning from Perimeter Security to Zero-Trust Architecture (Defense-in-Depth)
+- Token Relay filter patterns in Spring Cloud Gateway
+- Configuring Spring Boot microservices as independent OAuth2 Resource Servers
+- Validating AWS Cognito JWKS signatures and token expiration within each service
+- Extracting authenticated user context (`sub`, `email`, `roles`) via native Spring Security contexts (`@AuthenticationPrincipal Jwt`, `SecurityContextHolder`)
+- Eliminating internal header spoofing risks
+
+### Step-by-Step Checklist
+- [ ] Add `spring-boot-starter-security` and `spring-boot-starter-oauth2-resource-server` to `order-service`, `inventory-service`, and `payment-service`
+- [ ] Configure `SecurityConfig` in each microservice to validate Cognito JWKS
+- [ ] Configure `jwtAuthenticationConverter` in each service to map `cognito:groups` to `ROLE_*` authorities
+- [ ] Update controllers to inject `@AuthenticationPrincipal Jwt` and extract verified `sub` / `email`
+- [ ] Ensure API Gateway preserves and relays the `Authorization: Bearer <JWT>` header
+- [ ] Verify that direct unauthenticated or spoofed requests to downstream services are rejected with `401 Unauthorized`
+- [ ] Test complete end-to-end checkout with valid tokens
+
+---
+
+## Phase 8 — Quality & Observability
+**Epic**: [Epic 11 — Race Condition Testing & Observability](./epic11-testing-observability/epic11-testing-observability.md)  
 **Estimated Time**: 1–2 days  
 **Goal**: "I can prove my system is correct under concurrent load through the API Gateway"
 
@@ -254,7 +278,8 @@ Build the API endpoint first. Don't add event listeners yet.
 | Phase 4 Done | You understand the open/closed principle at system scale |
 | Phase 5 Done | End-to-end working product with real UI |
 | Phase 6 Done | Dynamic service discovery and unified API Gateway routing |
-| Phase 7 Done | Your system is provably correct under concurrent load |
+| Phase 7 Done | Zero-trust microservice security with end-to-end JWT token propagation |
+| Phase 8 Done | Your system is provably correct under concurrent load |
 
 ---
 
@@ -278,4 +303,5 @@ Build the API endpoint first. Don't add event listeners yet.
 | 4 | Observer pattern, `spring.main.web-application-type: none` |
 | 5 | React Router v7 loaders/actions, React Context, `useEffect` cleanup |
 | 6 | Service discovery with Eureka, reactive routing with Spring Cloud Gateway, client load balancing |
-| 7 | MDC (Mapped Diagnostic Context), Logback JSON encoding, concurrent HTTP clients |
+| 7 | Zero-Trust architecture, OAuth2 Resource Server, JWT signature validation, Token Relay |
+| 8 | MDC (Mapped Diagnostic Context), Logback JSON encoding, concurrent HTTP clients |

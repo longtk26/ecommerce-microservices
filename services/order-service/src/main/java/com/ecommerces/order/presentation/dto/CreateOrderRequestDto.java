@@ -12,7 +12,9 @@ import java.util.List;
 @Data
 public class CreateOrderRequestDto {
 
-    @NotBlank
+    /**
+     * User ID. If not supplied in request body, it is populated from @CurrentUser JWT context.
+     */
     private String userId;
 
     /** UUID string — validated format is enforced in the use case during UUID.fromString(). */

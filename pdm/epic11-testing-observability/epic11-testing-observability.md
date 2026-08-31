@@ -1,4 +1,4 @@
-# Epic 10 — Race Condition Testing & Observability
+# Epic 11 — Race Condition Testing & Observability
 
 ## Overview
 

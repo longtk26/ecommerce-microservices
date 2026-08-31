@@ -19,6 +19,12 @@ spring:
   flyway:
     enabled: true
     baseline-on-migrate: true
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${COGNITO_ISSUER_URI:https://cognito-idp.us-east-1.amazonaws.com/us-east-1_example}
+          jwk-set-uri: ${COGNITO_JWK_SET_URI:https://cognito-idp.us-east-1.amazonaws.com/us-east-1_example/.well-known/jwks.json}
 
 server:
   port: ${SERVER_PORT:8082}

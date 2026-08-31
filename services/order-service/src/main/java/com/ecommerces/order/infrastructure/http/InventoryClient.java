@@ -6,6 +6,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpStatusCode;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientException;
@@ -31,6 +35,13 @@ public class InventoryClient {
             RestClient.Builder restClientBuilder) {
         this.restClient = restClientBuilder
                 .baseUrl(baseUrl)
+                .requestInitializer(request -> {
+                    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+                    if (auth instanceof JwtAuthenticationToken jwtAuth) {
+                        Jwt token = jwtAuth.getToken();
+                        request.getHeaders().setBearerAuth(token.getTokenValue());
+                    }
+                })
                 .build();
     }
 

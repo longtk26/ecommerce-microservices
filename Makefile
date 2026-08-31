@@ -107,8 +107,15 @@ flyway-info-all: flyway-info-order flyway-info-inventory flyway-info-payment
 
 # ── Build ─────────────────────────────────────────────────────────────────────
 
+## Compile shared libraries (shared-events, shared-security)
+build-shared:
+	@echo "▶ Compiling shared libraries..."
+	@cd shared/events && mvn install -q
+	@cd shared/security && mvn install -q
+	@echo "✔ Shared libraries installed."
+
 ## Compile all services
-build-all:
+build-all: build-shared
 	@echo "▶ Compiling all services..."
 	@cd services/discovery-service    && mvn compile -q
 	@cd services/api-gateway          && mvn compile -q

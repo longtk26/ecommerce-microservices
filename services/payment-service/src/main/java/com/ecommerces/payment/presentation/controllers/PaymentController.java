@@ -2,6 +2,8 @@ package com.ecommerces.payment.presentation.controllers;
 
 import com.ecommerces.payment.presentation.dto.ProcessPaymentRequestDto;
 import com.ecommerces.payment.usecases.ProcessPaymentUseCase;
+import com.ecommerces.security.annotation.CurrentUser;
+import com.ecommerces.security.context.UserContext;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -21,7 +23,9 @@ public class PaymentController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.ACCEPTED)
-    public void processPayment(@RequestBody ProcessPaymentRequestDto dto) {
+    public void processPayment(
+            @RequestBody ProcessPaymentRequestDto dto,
+            @CurrentUser UserContext user) {
         processPaymentUseCase.execute(dto);
     }
 }

@@ -7,6 +7,8 @@ import com.ecommerces.order.presentation.dto.GetOrderResponseDto;
 import com.ecommerces.order.presentation.dto.GetOrderResponseDto.GetOrderItemDto;
 import com.ecommerces.order.repository.OrderRepository;
 import com.ecommerces.order.usecases.CreateOrderUseCase;
+import com.ecommerces.security.annotation.CurrentUser;
+import com.ecommerces.security.context.UserContext;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -35,8 +37,10 @@ public class OrderController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public CreateOrderResponseDto createOrder(@Valid @RequestBody CreateOrderRequestDto dto) {
-        return createOrderUseCase.execute(dto);
+    public CreateOrderResponseDto createOrder(
+            @Valid @RequestBody CreateOrderRequestDto dto,
+            @CurrentUser UserContext user) {
+        return createOrderUseCase.execute(dto, user.userId());
     }
 
     /**

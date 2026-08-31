@@ -88,7 +88,8 @@ Work through the epics **in order**. Each phase builds on the last.
 | **Phase 4 — Observers** | [Epic 6](./epic6-notification-service/epic6-notification-service.md) | Adding features without touching existing code |
 | **Phase 5 — Frontend** | [Epic 7](./epic7-frontend/epic7-frontend.md) | React Router v7 / Next.js buyer UI, real-time status polling |
 | **Phase 6 — Discovery & Gateway** | [Epic 8](./epic8-service-registry/epic8-service-registry.md) · [Epic 9](./epic9-api-gateway/epic9-api-gateway.md) | Dynamic host discovery, Eureka registry, API Gateway routing, AWS Cognito AuthN/AuthZ, CORS |
-| **Phase 7 — Quality** | [Epic 10](./epic10-testing-observability/epic10-testing-observability.md) | Race condition tests, structured logging, health checks |
+| **Phase 7 — Zero-Trust Security** | [Epic 10](./epic10-jwt-propagation/epic10-jwt-propagation.md) | End-to-end JWT token propagation, OAuth2 Resource Server across microservices, defense-in-depth |
+| **Phase 8 — Quality & Observability** | [Epic 11](./epic11-testing-observability/epic11-testing-observability.md) | Race condition tests, structured logging, health checks |
 
 ---
 

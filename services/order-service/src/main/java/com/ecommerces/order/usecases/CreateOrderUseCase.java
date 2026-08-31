@@ -58,8 +58,21 @@ public class CreateOrderUseCase {
      */
     @Transactional
     public CreateOrderResponseDto execute(CreateOrderRequestDto dto) {
+        return execute(dto, dto.getUserId());
+    }
+
+    @Transactional
+    public CreateOrderResponseDto execute(CreateOrderRequestDto dto, String authenticatedUserId) {
+        String effectiveUserId = (authenticatedUserId != null && !authenticatedUserId.isBlank())
+                ? authenticatedUserId
+                : dto.getUserId();
+
+        if (effectiveUserId == null || effectiveUserId.isBlank()) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Missing authenticated user ID");
+        }
+
         log.info("Creating order for userId={}, shopId={}, items={}",
-                dto.getUserId(), dto.getShopId(), dto.getItems().size());
+                effectiveUserId, dto.getShopId(), dto.getItems().size());
 
         // 1. Fetch price snapshots from Inventory Service in a single bulk call
         //    (avoids N sequential HTTP requests — one per order item).
@@ -92,7 +105,7 @@ public class CreateOrderUseCase {
         }
 
         // 2. Build and persist the order (CascadeType.ALL saves items automatically)
-        Order order = new Order(dto.getUserId(), UUID.fromString(dto.getShopId()), totalAmount);
+        Order order = new Order(effectiveUserId, UUID.fromString(dto.getShopId()), totalAmount);
         for (OrderCreatedEvent.OrderItemPayload payload : eventItems) {
             order.addItem(
                     UUID.fromString(payload.productId()),

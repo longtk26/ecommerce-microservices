@@ -5,13 +5,17 @@ import com.ecommerces.payment.ports.IOrderServiceClient;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClient;
 
 /**
- * HTTP that calls the order-service REST API to fetch order details.
- * Uses Spring 6's {@link RestClient} (blocking, replaces RestTemplate).
+ * HTTP client that calls the order-service REST API to fetch order details.
+ * Propagates the active JWT Bearer token from the Spring Security context.
  */
 @Component
 public class OrderServiceClient implements IOrderServiceClient {
@@ -23,6 +27,13 @@ public class OrderServiceClient implements IOrderServiceClient {
             @Value("${services.order-service.url:http://order-service}") String orderServiceUrl) {
         this.restClient = restClientBuilder
                 .baseUrl(orderServiceUrl)
+                .requestInitializer(request -> {
+                    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+                    if (auth instanceof JwtAuthenticationToken jwtAuth) {
+                        Jwt token = jwtAuth.getToken();
+                        request.getHeaders().setBearerAuth(token.getTokenValue());
+                    }
+                })
                 .build();
     }
 
