@@ -201,6 +201,8 @@ Build the API endpoint first. Don't add event listeners yet.
 - Service registration and dynamic host discovery with Spring Cloud Netflix Eureka
 - Client-side load balancing via `lb://` URI schemes
 - Centralizing cross-cutting concerns (CORS, request routing, correlation IDs) in Spring Cloud Gateway
+- Implementing Authentication (AuthN) with AWS Cognito as an OAuth2 Resource Server at the Gateway
+- Implementing coarse-grained Authorization (AuthZ) at the Gateway (route RBAC) and context propagation (`X-User-Id`, `X-User-Roles`) to downstream services for fine-grained domain AuthZ
 - Decoupling frontend network knowledge from internal microservice topologies
 
 ### Step-by-Step Checklist
@@ -208,16 +210,20 @@ Build the API endpoint first. Don't add event listeners yet.
 - [ ] Annotate with `@EnableEurekaServer` and configure standalone mode on port `8761`
 - [ ] Add `spring-cloud-starter-netflix-eureka-client` to all backend services (`order-service`, `inventory-service`, `payment-service`, `notification-service`)
 - [ ] Verify all services appear under `http://localhost:8761` dashboard
-- [ ] Create `services/api-gateway/` with `spring-cloud-starter-gateway` on port `8080`
+- [ ] Create `services/api-gateway/` with `spring-cloud-starter-gateway`, `spring-boot-starter-security`, and `spring-boot-starter-oauth2-resource-server` on port `8080`
 - [ ] Configure dynamic routes (`/api/orders/**` -> `lb://order-service`, `/api/shops/**` -> `lb://inventory-service`)
+- [ ] Configure `SecurityWebFilterChain` to validate Cognito JWTs (JWKS) and define public vs protected routes
+- [ ] Implement `UserContextFilter` to extract Cognito claims (`sub`, `email`, `cognito:groups`) and inject `X-User-Id`, `X-User-Email`, `X-User-Roles` headers
 - [ ] Add global CORS rules in Gateway `application.yml` for frontend origins
 - [ ] Add `CorrelationTrackingFilter` to attach `X-Correlation-Id`
-- [ ] Update frontend environment configuration to point to `http://localhost:8080`
+- [ ] Update frontend environment configuration to point to `http://localhost:8080` and attach Cognito Bearer token
 - [ ] Test end-to-end checkout flow purely through the Gateway port `8080`
 
 ### Common Mistakes at This Phase
 - **Accidentally including `spring-boot-starter-web` (Tomcat) in `api-gateway`** — Spring Cloud Gateway is reactive (Netty/WebFlux) and will crash if Tomcat is on the classpath
 - **Missing `spring.application.name`** — Eureka uses this property to name the registered service
+- **Header Spoofing Vulnerability** — Not sanitizing/stripping incoming `X-User-*` headers from untrusted clients before forwarding requests downstream
+- **Redundant JWT Validation Downstream** — Having downstream services re-validate Cognito JWTs rather than consuming the trusted internal user headers provided by the Gateway boundary
 - **Container IP resolution issues in Docker Compose** — configure `eureka.instance.prefer-ip-address: true` so containers discover each other via IP/Docker DNS
 
 ---

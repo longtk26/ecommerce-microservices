@@ -1,4 +1,4 @@
-import * as React from "react";
+import type { HTMLAttributes } from "react";
 import { cn } from "@/lib/utils";
 
 export type BadgeVariant =
@@ -10,7 +10,7 @@ export type BadgeVariant =
   | "warning"
   | "glow";
 
-type BadgeProps = React.HTMLAttributes<HTMLDivElement> & {
+type BadgeProps = HTMLAttributes<HTMLDivElement> & {
   variant?: BadgeVariant;
 };
 

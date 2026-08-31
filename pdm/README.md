@@ -87,7 +87,7 @@ Work through the epics **in order**. Each phase builds on the last.
 | **Phase 3 — Core Saga** | [Epic 3](./epic3-order-service/epic3-order-service.md) · [Epic 4](./epic4-inventory-service/epic4-inventory-service.md) · [Epic 5](./epic5-payment-service/epic5-payment-service.md) | Event publishing, consuming, compensation rollbacks |
 | **Phase 4 — Observers** | [Epic 6](./epic6-notification-service/epic6-notification-service.md) | Adding features without touching existing code |
 | **Phase 5 — Frontend** | [Epic 7](./epic7-frontend/epic7-frontend.md) | React Router v7 / Next.js buyer UI, real-time status polling |
-| **Phase 6 — Discovery & Gateway** | [Epic 8](./epic8-service-registry/epic8-service-registry.md) · [Epic 9](./epic9-api-gateway/epic9-api-gateway.md) | Dynamic host discovery, Eureka registry, API Gateway routing, CORS |
+| **Phase 6 — Discovery & Gateway** | [Epic 8](./epic8-service-registry/epic8-service-registry.md) · [Epic 9](./epic9-api-gateway/epic9-api-gateway.md) | Dynamic host discovery, Eureka registry, API Gateway routing, AWS Cognito AuthN/AuthZ, CORS |
 | **Phase 7 — Quality** | [Epic 10](./epic10-testing-observability/epic10-testing-observability.md) | Race condition tests, structured logging, health checks |
 
 ---
@@ -125,7 +125,7 @@ ecommerces/
 | **Optimistic Locking** | Epic 4: `@Version` on stock entity |
 | **Observer Pattern** | Epic 6: Notification Service |
 | **Service Discovery** | Epic 8: Eureka Server & dynamic instance registration |
-| **API Gateway & Routing** | Epic 9: Spring Cloud Gateway, dynamic load balancing, unified CORS |
+| **API Gateway & Security** | Epic 9: Spring Cloud Gateway, AWS Cognito AuthN, RBAC & context header propagation, unified CORS |
 | **Spring AMQP** | Epic 1: RabbitMQ integration in Spring Boot |
 | **Flyway Migrations** | Epic 2: versioned DB schema management |
 

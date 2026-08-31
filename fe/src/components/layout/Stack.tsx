@@ -1,7 +1,7 @@
-import * as React from "react";
+import type { HTMLAttributes } from "react";
 import { cn } from "@/lib/utils";
 
-type StackProps = React.HTMLAttributes<HTMLDivElement> & {
+type StackProps = HTMLAttributes<HTMLDivElement> & {
   gap?: "xs" | "sm" | "md" | "lg" | "xl" | "2xl";
   direction?: "row" | "col";
   align?: "start" | "center" | "end" | "stretch" | "baseline";

@@ -1,6 +1,6 @@
 "use client";
 
-import * as React from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -10,7 +10,7 @@ import { checkoutSchema, type TCheckoutFormValues, generateUserId } from "../sch
 
 export function useCheckoutForm() {
   const router = useRouter();
-  const [errorMessage, setErrorMessage] = React.useState<string | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const items = useCartStore((state) => state.items);
   const shopId = useCartStore((state) => state.shopId);

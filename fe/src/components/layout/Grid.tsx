@@ -1,7 +1,7 @@
-import * as React from "react";
+import type { HTMLAttributes } from "react";
 import { cn } from "@/lib/utils";
 
-type GridProps = React.HTMLAttributes<HTMLDivElement> & {
+type GridProps = HTMLAttributes<HTMLDivElement> & {
   cols?: 1 | 2 | 3 | 4 | 5 | 6 | 12;
   gap?: "xs" | "sm" | "md" | "lg" | "xl";
 };

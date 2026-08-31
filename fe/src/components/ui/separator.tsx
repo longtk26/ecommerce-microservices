@@ -1,7 +1,7 @@
-import * as React from "react";
+import type { HTMLAttributes } from "react";
 import { cn } from "@/lib/utils";
 
-type SeparatorProps = React.HTMLAttributes<HTMLDivElement> & {
+type SeparatorProps = HTMLAttributes<HTMLDivElement> & {
   orientation?: "horizontal" | "vertical";
 };
 

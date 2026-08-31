@@ -1,34 +1,23 @@
 import type { NextConfig } from "next";
 
-const inventoryUrl = process.env.INVENTORY_SERVICE_URL || "http://localhost:8082";
-const orderUrl = process.env.ORDER_SERVICE_URL || "http://localhost:8081";
-const paymentUrl = process.env.PAYMENT_SERVICE_URL || "http://localhost:8083";
+const apiGatewayUrl = process.env.API_GATEWAY_URL || "http://localhost:8080";
 
 const nextConfig: NextConfig = {
   async rewrites() {
     return [
+      // Map legacy /api/inventory/:path* rewrite to /api/:path* on Gateway
       {
         source: "/api/inventory/:path*",
-        destination: `${inventoryUrl}/api/:path*`,
+        destination: `${apiGatewayUrl}/api/:path*`,
       },
+      // Direct gateway forwarding for all /api/* routes
       {
-        source: "/api/orders/:path*",
-        destination: `${orderUrl}/api/orders/:path*`,
-      },
-      {
-        source: "/api/orders",
-        destination: `${orderUrl}/api/orders`,
-      },
-      {
-        source: "/api/payments/:path*",
-        destination: `${paymentUrl}/api/payments/:path*`,
-      },
-      {
-        source: "/api/payments",
-        destination: `${paymentUrl}/api/payments`,
+        source: "/api/:path*",
+        destination: `${apiGatewayUrl}/api/:path*`,
       },
     ];
   },
 };
 
 export default nextConfig;
+

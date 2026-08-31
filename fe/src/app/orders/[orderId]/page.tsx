@@ -1,6 +1,5 @@
 "use client";
 
-import * as React from "react";
 import { useParams } from "next/navigation";
 import { OrderStatusTracker } from "@/features/orders/components/OrderStatusTracker";
 

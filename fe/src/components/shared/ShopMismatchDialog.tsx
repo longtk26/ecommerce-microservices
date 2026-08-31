@@ -1,6 +1,5 @@
 "use client";
 
-import * as React from "react";
 import { useCartStore } from "@/store/cart-store";
 import { Button } from "@/components/ui/button";
 import { AlertTriangle } from "lucide-react";

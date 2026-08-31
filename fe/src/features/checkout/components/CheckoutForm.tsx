@@ -1,6 +1,5 @@
 "use client";
 
-import * as React from "react";
 import Link from "next/link";
 import { useCheckoutForm } from "../hooks/use-checkout-form";
 import { CheckoutSummaryCard } from "./CheckoutSummaryCard";

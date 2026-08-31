@@ -111,6 +111,7 @@ flyway-info-all: flyway-info-order flyway-info-inventory flyway-info-payment
 build-all:
 	@echo "▶ Compiling all services..."
 	@cd services/discovery-service    && mvn compile -q
+	@cd services/api-gateway          && mvn compile -q
 	@cd services/order-service        && mvn compile -q
 	@cd services/inventory-service    && mvn compile -q
 	@cd services/payment-service      && mvn compile -q
@@ -124,6 +125,13 @@ run-discovery:
 	@echo "▶ Starting discovery-service..."
 	@cd services/discovery-service && \
 	mvn spring-boot:run
+
+## Start api-gateway in dev mode
+run-gateway:
+	@echo "▶ Starting api-gateway..."
+	@cd services/api-gateway && \
+	export $$(grep -v '^\#' .env | xargs) && \
+	mvn spring-boot:run -Dspring-boot.run.profiles=dev
 
 ## Start order-service in dev mode
 run-order:
@@ -172,7 +180,7 @@ setup: infra-up
 	@$(MAKE) migrate-all
 	@echo ""
 	@echo "✅ Setup complete! Databases migrated and seeded."
-	@echo "   Run 'make run-discovery', 'make run-order', 'make run-inventory', or 'make run-payment' to start services."
+	@echo "   Run 'make run-discovery', 'make run-gateway', 'make run-order', 'make run-inventory', or 'make run-payment' to start services."
 
 # ── Help ──────────────────────────────────────────────────────────────────────
 
@@ -190,6 +198,6 @@ help:
 	seed-inventory seed-all \
 	flyway-info-order flyway-info-inventory flyway-info-payment flyway-info-all \
 	build-all build-fe \
-	run-discovery run-order run-inventory run-payment run-notification run-fe \
+	run-discovery run-gateway run-order run-inventory run-payment run-notification run-fe \
 	setup help
 

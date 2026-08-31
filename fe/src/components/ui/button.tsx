@@ -1,4 +1,4 @@
-import * as React from "react";
+import { forwardRef, type ButtonHTMLAttributes } from "react";
 import { cn } from "@/lib/utils";
 import { Loader2 } from "lucide-react";
 
@@ -13,7 +13,7 @@ export type ButtonVariant =
 
 export type ButtonSize = "default" | "sm" | "lg" | "icon";
 
-type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
+type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   variant?: ButtonVariant;
   size?: ButtonSize;
   isLoading?: boolean;
@@ -43,7 +43,7 @@ const sizeStyles: Record<ButtonSize, string> = {
   icon: "h-10 w-10 p-0 flex items-center justify-center",
 };
 
-export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
+export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, variant = "default", size = "default", isLoading = false, disabled, children, ...props }, ref) => {
     return (
       <button

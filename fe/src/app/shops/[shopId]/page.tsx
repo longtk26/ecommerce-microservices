@@ -1,6 +1,5 @@
 "use client";
 
-import * as React from "react";
 import { useParams } from "next/navigation";
 import { Container } from "@/components/layout/Container";
 import { ProductGrid } from "@/features/products/components/ProductGrid";

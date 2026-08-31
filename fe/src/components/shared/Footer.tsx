@@ -1,5 +1,5 @@
 import { Container } from "@/components/layout/Container";
-import { Layers, ShieldCheck, Zap, ArrowRightLeft } from "lucide-react";
+import { Layers, ShieldCheck, Zap, ArrowRightLeft, Lock, Compass } from "lucide-react";
 
 export function Footer() {
   return (
@@ -14,34 +14,34 @@ export function Footer() {
               ShopSaga Microservices Platform
             </div>
             <p className="text-xs text-muted-foreground leading-relaxed max-w-md">
-              Powered by Spring Boot microservices and Next.js. Utilizing asynchronous saga choreography
-              over RabbitMQ to guarantee eventual consistency across Orders, Inventory reservations, and Payment processing.
+              Powered by Spring Boot microservices, Spring Cloud Gateway, and Next.js. Secured at the edge with
+              AWS Cognito OAuth2 JWT validation and dynamic Eureka service discovery.
             </p>
           </div>
 
           <div className="space-y-2">
             <h4 className="text-xs font-bold uppercase tracking-wider text-foreground">
-              Architecture
+              Gateway & Security
             </h4>
             <ul className="space-y-1.5 text-xs">
               <li className="flex items-center gap-1.5">
+                <Lock className="h-3.5 w-3.5 text-emerald-400" />
+                <span>API Gateway & Cognito (Port 8080)</span>
+              </li>
+              <li className="flex items-center gap-1.5">
+                <Compass className="h-3.5 w-3.5 text-indigo-400" />
+                <span>Eureka Discovery (Port 8761)</span>
+              </li>
+              <li className="flex items-center gap-1.5">
                 <Zap className="h-3.5 w-3.5 text-amber-400" />
-                <span>Inventory Service (Port 8082)</span>
-              </li>
-              <li className="flex items-center gap-1.5">
-                <Zap className="h-3.5 w-3.5 text-indigo-400" />
-                <span>Order Service (Port 8081)</span>
-              </li>
-              <li className="flex items-center gap-1.5">
-                <Zap className="h-3.5 w-3.5 text-emerald-400" />
-                <span>Payment Service (Port 8083)</span>
+                <span>Internal Microservices (8081-8083)</span>
               </li>
             </ul>
           </div>
 
           <div className="space-y-2">
             <h4 className="text-xs font-bold uppercase tracking-wider text-foreground">
-              Saga Flow
+              Saga Flow & Auth
             </h4>
             <div className="space-y-1 text-xs text-muted-foreground">
               <p className="flex items-center gap-1.5">
@@ -50,7 +50,7 @@ export function Footer() {
               </p>
               <p className="flex items-center gap-1.5">
                 <ShieldCheck className="h-3.5 w-3.5 text-emerald-400" />
-                <span>Compensating Transactions</span>
+                <span>Role-Based AuthZ (RBAC)</span>
               </p>
             </div>
           </div>
@@ -58,7 +58,7 @@ export function Footer() {
 
         <div className="border-t border-border/40 pt-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs">
           <p>© {new Date().getFullYear()} ShopSaga. Built for distributed transaction resilience.</p>
-          <p className="text-muted-foreground">Next.js App Router • TanStack Query • Zustand</p>
+          <p className="text-muted-foreground">Next.js App Router • Spring Cloud Gateway • TanStack Query • Zustand</p>
         </div>
       </Container>
     </footer>
