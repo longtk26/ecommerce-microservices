@@ -1,5 +1,5 @@
 import { Badge } from "@/components/ui/badge";
-import { Sparkles, Layers, ShieldCheck, Zap } from "lucide-react";
+import { Sparkles, ShieldCheck, ShoppingBag } from "lucide-react";
 
 export function ShopHero() {
   return (
@@ -12,23 +12,23 @@ export function ShopHero() {
         <div className="flex flex-wrap items-center gap-2">
           <Badge variant="glow" className="px-3 py-1 text-xs">
             <Sparkles className="h-3.5 w-3.5 text-indigo-400" />
-            <span>Distributed Microservices Commerce</span>
+            <span>Curated Marketplace</span>
           </Badge>
           <Badge variant="success" className="px-3 py-1 text-xs">
             <ShieldCheck className="h-3.5 w-3.5 text-emerald-400" />
-            <span>Event-Driven Sagas</span>
+            <span>Verified Merchants</span>
           </Badge>
         </div>
 
         <div className="space-y-3">
           <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-foreground leading-[1.15]">
-            Experience Real-Time, <br />
+            Discover Unique Shops & <br />
             <span className="bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
-              Choreographed E-Commerce
+              Curated Collections
             </span>
           </h1>
           <p className="text-sm sm:text-base text-muted-foreground leading-relaxed max-w-2xl">
-            Select a verified vendor below to browse real-time inventory. Place an order and watch the distributed saga resolve state across inventory reservations, payment processing, and confirmation in real-time.
+            Select a verified merchant below to explore live product collections, enjoy secure checkout, and track your orders in real time.
           </p>
         </div>
 
@@ -39,14 +39,15 @@ export function ShopHero() {
           </div>
           <div className="flex items-center gap-2">
             <div className="h-2 w-2 rounded-full bg-indigo-400 animate-pulse" />
-            <span>Saga Compensations</span>
+            <span>Secure Payments</span>
           </div>
           <div className="flex items-center gap-2">
             <div className="h-2 w-2 rounded-full bg-purple-400 animate-pulse" />
-            <span>Instant Stock Locks</span>
+            <span>Live Order Tracking</span>
           </div>
         </div>
       </div>
     </div>
   );
 }
+

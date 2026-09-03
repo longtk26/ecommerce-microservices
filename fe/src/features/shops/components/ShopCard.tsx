@@ -1,4 +1,3 @@
-import * as React from "react";
 import Link from "next/link";
 import { Card, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -32,7 +31,7 @@ export function ShopCard({ shop }: ShopCardProps) {
           </div>
           <Badge variant="glow" className="text-[11px]">
             <Sparkles className="h-3 w-3" />
-            Verified Vendor
+            Verified Merchant
           </Badge>
         </div>
 
@@ -40,7 +39,7 @@ export function ShopCard({ shop }: ShopCardProps) {
           {shop.name}
         </CardTitle>
         <CardDescription className="line-clamp-2 mt-2 text-xs leading-relaxed text-muted-foreground">
-          {shop.description || "Discover verified inventory and exclusive offers from this shop."}
+          {shop.description || "Discover verified products and exclusive offers from this shop."}
         </CardDescription>
       </CardHeader>
 
@@ -58,3 +57,4 @@ export function ShopCard({ shop }: ShopCardProps) {
     </Card>
   );
 }
+

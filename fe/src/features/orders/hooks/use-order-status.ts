@@ -1,13 +1,15 @@
 "use client";
 
-import * as React from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useState, useEffect } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { fetchOrder } from "../api/orders-api";
 import { orderKeys } from "../query-keys";
+import { productKeys } from "@/features/products/query-keys";
 import type { TGetOrderResponse } from "@/types/order";
 
 export function useOrderStatus(orderId: string) {
-  const [pollCount, setPollCount] = React.useState(0);
+  const [pollCount, setPollCount] = useState(0);
+  const queryClient = useQueryClient();
   const MAX_POLLS = 30; // 30 * 2s = 60s timeout
 
   const query = useQuery<TGetOrderResponse>({
@@ -28,6 +30,15 @@ export function useOrderStatus(orderId: string) {
     },
   });
 
+  const status = query.data?.status;
+
+  // When order reaches a terminal state, invalidate products to refresh live stock counts
+  useEffect(() => {
+    if (status === "COMPLETED" || status === "CANCELLED") {
+      queryClient.invalidateQueries({ queryKey: productKeys.all });
+    }
+  }, [status, queryClient]);
+
   const isTimeout =
     query.data?.status === "PENDING" && pollCount >= MAX_POLLS;
 
@@ -43,3 +54,4 @@ export function useOrderStatus(orderId: string) {
     pollCount,
   };
 }
+

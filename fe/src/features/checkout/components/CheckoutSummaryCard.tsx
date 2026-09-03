@@ -1,7 +1,6 @@
-import * as React from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { formatCurrency } from "@/lib/utils";
-import { ShoppingBag, Store, ShieldCheck, Package } from "lucide-react";
+import { ShoppingBag, Store, Package } from "lucide-react";
 import type { TCartItem } from "@/types/cart";
 
 type CheckoutSummaryCardProps = {
@@ -79,14 +78,8 @@ export function CheckoutSummaryCard({ items, shopName }: CheckoutSummaryCardProp
             <span className="font-black text-indigo-400">{formatCurrency(total)}</span>
           </div>
         </div>
-
-        <div className="rounded-xl border border-indigo-500/20 bg-indigo-500/10 p-3 flex items-start gap-2.5 text-xs text-indigo-300">
-          <ShieldCheck className="h-4 w-4 shrink-0 mt-0.5" />
-          <p className="leading-tight">
-            Protected by Saga choreography. Inventory is reserved synchronously, and payment processed upon confirmation.
-          </p>
-        </div>
       </CardContent>
     </Card>
   );
 }
+

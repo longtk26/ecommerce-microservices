@@ -1,4 +1,3 @@
-import * as React from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -51,7 +50,7 @@ export function ShopHeader({ shop, totalProducts = 0 }: ShopHeaderProps) {
                 </Badge>
               </div>
               <p className="mt-1 text-xs sm:text-sm text-muted-foreground max-w-xl">
-                {shop?.description || "Browse live product inventory and real-time stock levels."}
+                {shop?.description || "Browse product collections and available items."}
               </p>
             </div>
           </div>
@@ -69,3 +68,4 @@ export function ShopHeader({ shop, totalProducts = 0 }: ShopHeaderProps) {
     </div>
   );
 }
+

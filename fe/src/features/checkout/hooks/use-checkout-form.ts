@@ -1,12 +1,17 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useCartStore } from "@/store/cart-store";
+import { useAuthStore } from "@/store/auth-store";
 import { useCreateOrder } from "./use-create-order";
-import { checkoutSchema, type TCheckoutFormValues, generateUserId } from "../schemas/checkout-schema";
+import {
+  checkoutSchema,
+  type TCheckoutFormValues,
+  generateUserId,
+} from "../schemas/checkout-schema";
 
 export function useCheckoutForm() {
   const router = useRouter();
@@ -17,17 +22,23 @@ export function useCheckoutForm() {
   const shopName = useCartStore((state) => state.shopName);
   const clearCart = useCartStore((state) => state.clearCart);
 
+  const user = useAuthStore((state) => state.user);
+
   const { mutateAsync: submitOrder, isPending } = useCreateOrder();
 
   const form = useForm<TCheckoutFormValues>({
     resolver: zodResolver(checkoutSchema),
     defaultValues: {
-      customerName: "Alex Mercer",
+      customerEmail: user?.email || "",
     },
   });
 
-  const watchedName = form.watch("customerName");
-  const computedUserId = generateUserId(watchedName || "");
+  // Sync logged-in user email when available
+  useEffect(() => {
+    if (user?.email && !form.getValues("customerEmail")) {
+      form.setValue("customerEmail", user.email);
+    }
+  }, [user?.email, form]);
 
   const onSubmit = async (values: TCheckoutFormValues) => {
     setErrorMessage(null);
@@ -39,7 +50,7 @@ export function useCheckoutForm() {
 
     try {
       const orderPayload = {
-        userId: generateUserId(values.customerName),
+        userId: user?.id || generateUserId(values.customerEmail),
         shopId: shopId,
         items: items.map((item) => ({
           productId: item.productId,
@@ -64,10 +75,10 @@ export function useCheckoutForm() {
     onSubmit: form.handleSubmit(onSubmit),
     isSubmitting: isPending,
     errorMessage,
-    computedUserId,
     items,
     shopId,
     shopName,
     isEmpty: items.length === 0,
   };
 }
+

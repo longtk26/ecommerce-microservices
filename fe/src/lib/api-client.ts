@@ -50,7 +50,7 @@ class ApiClient {
       }
 
       const data = await response.json();
-      const newAccessToken: string = data.accessToken;
+      const newAccessToken: string = data.idToken || data.accessToken;
       const newRefreshToken: string | undefined = data.refreshToken || refreshToken;
 
       if (newAccessToken) {
@@ -101,6 +101,29 @@ class ApiClient {
             ...(options?.headers as Record<string, string> | undefined),
             Authorization: `Bearer ${newAccessToken}`,
           },
+        });
+      }
+
+      // If token refresh was not possible or failed, and this is a public GET catalog route,
+      // fallback without Authorization header so the catalog remains accessible.
+      const isGet = !options?.method || options.method.toUpperCase() === "GET";
+      const isPublicPath =
+        url.includes("/api/inventory/") ||
+        url.includes("/api/shops") ||
+        url.includes("/api/products");
+
+      if (isGet && isPublicPath) {
+        this.setAuthToken(null);
+        const headersWithoutAuth = {
+          ...defaultHeaders,
+          ...(options?.headers as Record<string, string> | undefined),
+        };
+        delete headersWithoutAuth["Authorization"];
+
+        return this.request<T>(url, {
+          ...options,
+          _isRetry: true,
+          headers: headersWithoutAuth,
         });
       }
     }

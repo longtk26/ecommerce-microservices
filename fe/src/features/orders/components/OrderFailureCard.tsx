@@ -1,4 +1,3 @@
-import * as React from "react";
 import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -19,13 +18,13 @@ export function OrderFailureCard({ order }: OrderFailureCardProps) {
         </div>
         <Badge variant="destructive" className="mb-2">
           <ShieldAlert className="h-3 w-3" />
-          Saga Compensation Executed
+          Order Cancelled
         </Badge>
         <h2 className="text-2xl sm:text-3xl font-extrabold text-foreground tracking-tight">
           Order Cancelled
         </h2>
         <p className="text-xs sm:text-sm text-muted-foreground mt-1 max-w-md mx-auto">
-          The transaction could not be completed. Stock was released and any pending charges were refunded.
+          The transaction could not be completed. Stock was released and any pending charges were reversed.
         </p>
       </div>
 
@@ -35,9 +34,9 @@ export function OrderFailureCard({ order }: OrderFailureCardProps) {
           <div className="space-y-1">
             <p className="font-bold">Possible Reasons for Cancellation:</p>
             <ul className="list-disc list-inside space-y-0.5 text-muted-foreground">
-              <li>Insufficient stock inventory reserved concurrently by another buyer</li>
-              <li>Simulated payment authorization failure in payment-service</li>
-              <li>Saga timeout during event bus choreography</li>
+              <li>Insufficient stock inventory available</li>
+              <li>Payment authorization was declined or timed out</li>
+              <li>Session expired before payment completion</li>
             </ul>
           </div>
         </div>
@@ -50,7 +49,7 @@ export function OrderFailureCard({ order }: OrderFailureCardProps) {
             </span>
           </div>
           <div>
-            <span className="text-muted-foreground block">Saga Resolution</span>
+            <span className="text-muted-foreground block">Status</span>
             <span className="font-bold text-destructive block mt-0.5">CANCELLED</span>
           </div>
         </div>
@@ -73,3 +72,4 @@ export function OrderFailureCard({ order }: OrderFailureCardProps) {
     </Card>
   );
 }
+

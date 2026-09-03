@@ -39,9 +39,9 @@ export function LoginDialog({ trigger }: LoginDialogProps) {
               <ShieldCheck className="h-5 w-5 text-primary" />
             </div>
             <div>
-              <DialogTitle>AWS Cognito Authentication</DialogTitle>
+              <DialogTitle>Account Sign In</DialogTitle>
               <DialogDescription>
-                Sign in with your Cognito credentials to access microservices via API Gateway
+                Sign in to your account to manage orders and checkout.
               </DialogDescription>
             </div>
           </div>

@@ -1,6 +1,5 @@
 "use client";
 
-import * as React from "react";
 import Link from "next/link";
 import { useOrderStatus } from "../hooks/use-order-status";
 import { useProcessPayment } from "../hooks/use-process-payment";
@@ -20,7 +19,6 @@ import {
   RefreshCw,
   Store,
   Sparkles,
-  ShieldCheck,
   CheckCircle2,
   Package,
 } from "lucide-react";
@@ -37,7 +35,6 @@ export function OrderStatusTracker({ orderId }: OrderStatusTrackerProps) {
     isError,
     error,
     refetch,
-    pollCount,
   } = useOrderStatus(orderId);
 
   const {
@@ -94,7 +91,7 @@ export function OrderStatusTracker({ orderId }: OrderStatusTrackerProps) {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-foreground">
-              Order Resolution Tracker
+              Order Status
             </h1>
             <p className="text-xs text-muted-foreground mt-1 font-mono">
               ID: {order.orderId}
@@ -116,7 +113,7 @@ export function OrderStatusTracker({ orderId }: OrderStatusTrackerProps) {
             )}
             {status === "CANCELLED" && (
               <Badge variant="destructive" className="gap-1.5 px-3 py-1 text-xs">
-                Cancelled / Compensated
+                Cancelled
               </Badge>
             )}
           </div>
@@ -137,7 +134,7 @@ export function OrderStatusTracker({ orderId }: OrderStatusTrackerProps) {
                     Complete Payment to Finalize Order
                   </h2>
                   <p className="text-xs text-muted-foreground mt-1 max-w-lg">
-                    Inventory has been temporarily locked for your order. Click below to authorize payment through the Payment Service.
+                    Items are reserved for your order. Click below to complete payment.
                   </p>
                 </div>
                 <div className="text-right shrink-0">
@@ -189,7 +186,7 @@ export function OrderStatusTracker({ orderId }: OrderStatusTrackerProps) {
               )}
 
               {/* Action Button */}
-              <div className="space-y-3 pt-2">
+              <div className="pt-2">
                 <Button
                   onClick={() => executePayment()}
                   isLoading={isPaying}
@@ -199,18 +196,10 @@ export function OrderStatusTracker({ orderId }: OrderStatusTrackerProps) {
                 >
                   <span className="flex items-center gap-2">
                     <CreditCard className="h-5 w-5" />
-                    {isPaying ? "Processing Payment Event..." : `Pay Now (${formatCurrency(order.totalAmount)})`}
+                    {isPaying ? "Processing Payment..." : `Pay Now (${formatCurrency(order.totalAmount)})`}
                   </span>
                   <Sparkles className="h-5 w-5" />
                 </Button>
-
-                <div className="flex items-center justify-between text-[11px] text-muted-foreground px-1">
-                  <span className="flex items-center gap-1.5">
-                    <ShieldCheck className="h-3.5 w-3.5 text-emerald-400" />
-                    Triggers <code>POST /api/payments</code> & RabbitMQ saga
-                  </span>
-                  <span>Polling check #{pollCount}</span>
-                </div>
               </div>
             </CardContent>
           </Card>
@@ -220,9 +209,10 @@ export function OrderStatusTracker({ orderId }: OrderStatusTrackerProps) {
 
         {status === "CANCELLED" && <OrderFailureCard order={order} />}
 
-        {/* Saga visualizer */}
+        {/* Timeline visualizer */}
         <SagaProgressSteps status={status || "PENDING"} />
       </Stack>
     </Container>
   );
 }
+

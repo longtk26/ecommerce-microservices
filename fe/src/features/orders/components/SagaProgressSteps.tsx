@@ -1,5 +1,4 @@
-import * as React from "react";
-import { CheckCircle2, Clock, XCircle, CreditCard, ShieldCheck } from "lucide-react";
+import { CheckCircle2, Clock, XCircle, CreditCard } from "lucide-react";
 import type { TOrderStatus } from "@/types/order";
 
 type SagaProgressStepsProps = {
@@ -9,7 +8,6 @@ type SagaProgressStepsProps = {
 type Step = {
   id: string;
   name: string;
-  service: string;
   description: string;
 };
 
@@ -17,26 +15,22 @@ const steps: Step[] = [
   {
     id: "order_created",
     name: "1. Order Created",
-    service: "order-service",
-    description: "Initial order persisted in PENDING state",
+    description: "Order has been placed and received",
   },
   {
     id: "stock_reserved",
     name: "2. Stock Reserved",
-    service: "inventory-service",
-    description: "Inventory locked via StockReservedEvent",
+    description: "Items verified and reserved for your order",
   },
   {
     id: "payment_processed",
     name: "3. Payment Authorization",
-    service: "payment-service",
-    description: "Charge authorized via PaymentProcessedEvent",
+    description: "Confirm payment to finalize your purchase",
   },
   {
     id: "order_completed",
     name: "4. Order Completed",
-    service: "notification-service",
-    description: "Saga resolved and confirmation published",
+    description: "Order confirmed and preparing for delivery",
   },
 ];
 
@@ -49,12 +43,9 @@ export function SagaProgressSteps({ status }: SagaProgressStepsProps) {
     <div className="rounded-2xl border border-border/80 bg-card/60 p-6 backdrop-blur-xl space-y-6">
       <div className="flex items-center justify-between">
         <h3 className="text-sm font-bold text-foreground flex items-center gap-2">
-          <ShieldCheck className="h-4 w-4 text-indigo-400" />
-          Saga Choreography Timeline
+          <CheckCircle2 className="h-4 w-4 text-indigo-400" />
+          Order Timeline
         </h3>
-        <span className="text-[11px] font-mono text-muted-foreground uppercase">
-          Event Bus Choreography
-        </span>
       </div>
 
       <div className="relative space-y-5">
@@ -137,9 +128,6 @@ export function SagaProgressSteps({ status }: SagaProgressStepsProps) {
                       </span>
                     )}
                   </span>
-                  <span className="text-[10px] font-mono text-muted-foreground bg-secondary px-2 py-0.5 rounded border border-border/50">
-                    {step.service}
-                  </span>
                 </div>
                 <p className="text-[11px] text-muted-foreground mt-0.5">
                   {step.description}
@@ -152,3 +140,4 @@ export function SagaProgressSteps({ status }: SagaProgressStepsProps) {
     </div>
   );
 }
+

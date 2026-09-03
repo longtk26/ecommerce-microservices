@@ -7,7 +7,6 @@ export default function HomePage() {
   return (
     <Container size="xl" className="py-8 sm:py-12">
       <Stack gap="2xl">
-        <ShopHero />
         <ShopList />
       </Stack>
     </Container>

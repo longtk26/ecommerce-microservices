@@ -1,13 +1,13 @@
 "use client";
 
-import * as React from "react";
+import { useEffect } from "react";
 import Link from "next/link";
 import confetti from "canvas-confetti";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { formatCurrency } from "@/lib/utils";
-import { CheckCircle2, Store, ShoppingBag, Package, Sparkles } from "lucide-react";
+import { CheckCircle2, Store, Package, Sparkles } from "lucide-react";
 import type { TGetOrderResponse } from "@/types/order";
 
 type OrderCelebrationCardProps = {
@@ -15,7 +15,7 @@ type OrderCelebrationCardProps = {
 };
 
 export function OrderCelebrationCard({ order }: OrderCelebrationCardProps) {
-  React.useEffect(() => {
+  useEffect(() => {
     // Trigger confetti cannon on success
     try {
       confetti({
@@ -38,7 +38,7 @@ export function OrderCelebrationCard({ order }: OrderCelebrationCardProps) {
         </div>
         <Badge variant="success" className="mb-2">
           <Sparkles className="h-3 w-3" />
-          Saga Choreography Complete
+          Payment Confirmed
         </Badge>
         <h2 className="text-2xl sm:text-3xl font-extrabold text-foreground tracking-tight">
           Order Successfully Placed!

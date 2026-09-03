@@ -6,17 +6,15 @@ import { CheckoutSummaryCard } from "./CheckoutSummaryCard";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Container } from "@/components/layout/Container";
 import { Stack } from "@/components/layout/Stack";
 import {
-  User,
+  Mail,
   AlertCircle,
   ArrowRight,
   Sparkles,
   ShoppingBag,
   Store,
-  CreditCard,
 } from "lucide-react";
 
 export function CheckoutForm() {
@@ -25,7 +23,6 @@ export function CheckoutForm() {
     onSubmit,
     isSubmitting,
     errorMessage,
-    computedUserId,
     items,
     shopName,
     isEmpty,
@@ -63,7 +60,7 @@ export function CheckoutForm() {
             Order Checkout
           </h1>
           <p className="text-sm text-muted-foreground mt-1">
-            Complete your customer details to trigger the order saga transaction.
+            Complete your customer details to place your order.
           </p>
         </div>
 
@@ -80,11 +77,11 @@ export function CheckoutForm() {
             <Card className="border-border/80 bg-card/60 backdrop-blur-xl">
               <CardHeader>
                 <div className="flex items-center gap-2">
-                  <User className="h-5 w-5 text-indigo-400" />
+                  <Mail className="h-5 w-5 text-indigo-400" />
                   <CardTitle className="text-lg">Customer Information</CardTitle>
                 </div>
                 <CardDescription>
-                  Enter your name. This will automatically format your user identity string.
+                  Enter your email address to receive order updates and receipt.
                 </CardDescription>
               </CardHeader>
 
@@ -92,52 +89,27 @@ export function CheckoutForm() {
                 <form onSubmit={onSubmit} className="space-y-6">
                   <div className="space-y-2">
                     <label
-                      htmlFor="customerName"
+                      htmlFor="customerEmail"
                       className="text-xs font-bold uppercase tracking-wider text-muted-foreground"
                     >
-                      Full Name
+                      Customer Email
                     </label>
                     <Input
-                      id="customerName"
-                      placeholder="e.g. Alex Mercer"
-                      {...form.register("customerName")}
+                      id="customerEmail"
+                      type="email"
+                      placeholder="e.g. customer@example.com"
+                      {...form.register("customerEmail")}
                       className={
-                        form.formState.errors.customerName
+                        form.formState.errors.customerEmail
                           ? "border-destructive focus-visible:ring-destructive"
                           : ""
                       }
                     />
-                    {form.formState.errors.customerName && (
+                    {form.formState.errors.customerEmail && (
                       <p className="text-xs text-destructive">
-                        {form.formState.errors.customerName.message}
+                        {form.formState.errors.customerEmail.message}
                       </p>
                     )}
-                  </div>
-
-                  {/* Computed User ID Preview */}
-                  <div className="rounded-xl border border-border/60 bg-secondary/40 p-4 space-y-2">
-                    <div className="flex items-center justify-between text-xs">
-                      <span className="text-muted-foreground font-medium">
-                        Computed Backend User ID:
-                      </span>
-                      <Badge variant="outline" className="font-mono text-indigo-300 border-indigo-500/30 bg-indigo-500/10">
-                        {computedUserId}
-                      </Badge>
-                    </div>
-                    <p className="text-[11px] text-muted-foreground leading-relaxed">
-                      Matches the backend contract format (<code>userId: &quot;user-[name]&quot;</code>) transmitted to the Order Service.
-                    </p>
-                  </div>
-
-                  {/* Payment Info Note */}
-                  <div className="rounded-xl border border-emerald-500/20 bg-emerald-500/10 p-4 flex items-center gap-3 text-xs text-emerald-300">
-                    <CreditCard className="h-5 w-5 shrink-0" />
-                    <div>
-                      <p className="font-bold">Test Payment Gateway Integration</p>
-                      <p className="text-emerald-400/80 mt-0.5">
-                        Payment will be automatically orchestrated via payment-service and RabbitMQ saga events.
-                      </p>
-                    </div>
                   </div>
 
                   <Button
@@ -149,7 +121,7 @@ export function CheckoutForm() {
                   >
                     <span className="flex items-center gap-2">
                       <Sparkles className="h-5 w-5" />
-                      Place Order & Start Saga
+                      Place Order
                     </span>
                     <ArrowRight className="h-5 w-5" />
                   </Button>
@@ -167,3 +139,4 @@ export function CheckoutForm() {
     </Container>
   );
 }
+

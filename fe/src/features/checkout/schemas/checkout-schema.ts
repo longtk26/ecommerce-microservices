@@ -1,16 +1,16 @@
 import { z } from "zod";
 
 export const checkoutSchema = z.object({
-  customerName: z
+  customerEmail: z
     .string()
-    .min(2, "Name must be at least 2 characters")
-    .max(50, "Name cannot exceed 50 characters")
-    .regex(/^[a-zA-Z0-9\s-]+$/, "Only alphanumeric characters, hyphens, and spaces allowed"),
+    .min(1, "Email address is required")
+    .email("Please enter a valid email address"),
 });
 
 export type TCheckoutFormValues = z.infer<typeof checkoutSchema>;
 
-export function generateUserId(name: string): string {
-  const clean = name.trim().toLowerCase().replace(/[^a-z0-9]+/g, "-");
+export function generateUserId(email: string): string {
+  const clean = email.trim().toLowerCase().replace(/[^a-z0-9]+/g, "-");
   return `user-${clean || "customer"}`;
 }
+

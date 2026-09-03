@@ -1,6 +1,5 @@
 "use client";
 
-import * as React from "react";
 import { useShops } from "../hooks/use-shops";
 import { ShopCard } from "./ShopCard";
 import { Grid } from "@/components/layout/Grid";
@@ -48,7 +47,7 @@ export function ShopList() {
         <div className="space-y-1">
           <h3 className="text-base font-semibold text-foreground">Failed to Load Shops</h3>
           <p className="text-xs text-muted-foreground">
-            {error instanceof Error ? error.message : "Could not connect to Inventory Service."}
+            {error instanceof Error ? error.message : "Could not load shops at this time. Please try again."}
           </p>
         </div>
         <Button variant="outline" size="sm" onClick={() => refetch()} className="gap-2">
@@ -67,7 +66,7 @@ export function ShopList() {
         </div>
         <h3 className="text-base font-semibold text-foreground">No Shops Available</h3>
         <p className="text-xs text-muted-foreground max-w-sm mx-auto">
-          No merchant shops were found in the database. Ensure the inventory database has been migrated and seeded.
+          No merchant shops are currently available. Please check back soon!
         </p>
       </div>
     );
@@ -97,3 +96,4 @@ export function ShopList() {
     </Stack>
   );
 }
+

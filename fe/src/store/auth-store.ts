@@ -92,12 +92,13 @@ export const useAuthStore = create<TAuthState>()(
             roles: mappedRoles,
           };
 
-          apiClient.setAuthToken(response.accessToken);
-          await setAuthCookies(response.accessToken, response.refreshToken);
+          const tokenToUse = response.idToken || response.accessToken;
+          apiClient.setAuthToken(tokenToUse);
+          await setAuthCookies(tokenToUse, response.refreshToken);
           set(
             {
               user,
-              token: response.accessToken,
+              token: tokenToUse,
               refreshToken: response.refreshToken ?? null,
               isAuthenticated: true,
             },

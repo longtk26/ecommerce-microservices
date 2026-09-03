@@ -1,6 +1,5 @@
 "use client";
 
-import * as React from "react";
 import { useShopProducts } from "../hooks/use-products";
 import { ProductCard } from "./ProductCard";
 import { ShopHeader } from "./ShopHeader";
@@ -76,7 +75,7 @@ export function ProductGrid({ shopId, shop }: ProductGridProps) {
           </div>
           <h3 className="text-base font-semibold text-foreground">No Products Listed</h3>
           <p className="text-xs text-muted-foreground max-w-sm mx-auto">
-            This vendor currently does not have any active inventory listed in the catalog.
+            This shop currently has no products listed. Please check back soon.
           </p>
         </div>
       ) : (
@@ -108,3 +107,4 @@ export function ProductGrid({ shopId, shop }: ProductGridProps) {
     </Stack>
   );
 }
+

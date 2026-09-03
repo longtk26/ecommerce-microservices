@@ -13,9 +13,9 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "ShopSaga — Distributed Microservices Commerce",
+  title: "ShopSaga — Multi-Vendor Marketplace",
   description:
-    "Real-time e-commerce storefront powered by Spring Boot event choreography, RabbitMQ sagas, and Next.js.",
+    "Discover verified merchants, browse live product inventory, and enjoy seamless, secure shopping with ShopSaga.",
 };
 
 export default function RootLayout({
@@ -24,7 +24,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark">
+    <html lang="en" className="dark" suppressHydrationWarning>
       <body className={`${inter.variable} font-sans antialiased min-h-screen flex flex-col`}>
         <Providers>
           <Header />
